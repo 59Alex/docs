@@ -1,0 +1,1149 @@
+Recommended Skills Registry
+
+1. website-audit
+2. landing-page-audit
+3. ux-audit
+4. copywriting
+5. conversion-optimization
+6. sales-copywriting
+7. positioning
+8. icp-analysis
+9. trust-audit
+10. objection-handling
+11. sales-funnel-audit
+12. pricing-audit
+13. checkout-optimization
+14. visual-design-audit
+15. information-architecture
+16. mobile-ux-audit
+17. accessibility-audit
+18. seo-audit
+19. technical-seo
+20. content-seo
+21. performance-audit
+22. technical-website-audit
+23. analytics-audit
+24. conversion-tracking
+25. ab-testing
+26. competitor-analysis
+27. market-research
+28. ecommerce-audit
+29. saas-website-audit
+30. b2b-website-audit
+31. service-business-audit
+32. local-business-audit
+# Website Sales & Conversion Audit Orchestrator
+
+## Purpose
+
+You are an orchestration skill for comprehensive website sales, conversion, UX, copy, trust, SEO, performance, and business-value audits.
+
+Your primary responsibility is **not to duplicate specialized audit expertise**.
+
+Instead:
+
+1. Understand the website, business, audience, and goal.
+2. Inspect available skills and identify the best existing skills for each audit dimension.
+3. Build a task-specific audit pipeline.
+4. Execute independent audits in parallel when possible.
+5. Pass relevant findings between dependent stages.
+6. Reconcile overlapping findings from different specialists.
+7. Identify root causes instead of producing duplicated observations.
+8. Prioritize improvements by likely business impact, confidence, and implementation effort.
+9. Produce a concrete recommended website structure/composition.
+10. Perform a final consistency and coverage audit.
+11. If changes are subsequently implemented, re-run the relevant audits and verify that improvements did not introduce regressions.
+
+The final result must be **one coherent business-oriented audit**, not a collection of unrelated specialist reports.
+
+---
+
+# Core Principle
+
+## Orchestrate existing expertise — do not recreate it
+
+Before performing an audit:
+
+* inspect the skills available in the current environment;
+* identify skills capable of performing:
+
+  * website audits;
+  * copywriting analysis;
+  * UX audits;
+  * conversion optimization;
+  * landing-page analysis;
+  * SEO analysis;
+  * accessibility analysis;
+  * performance analysis;
+  * competitor/market research;
+  * analytics/funnel analysis;
+  * visual/UI analysis;
+  * any other relevant specialist analysis.
+
+Use the closest existing skill for each task.
+
+Do **not** create a second implementation of an existing capability merely because it would be convenient.
+
+If an appropriate skill exists, delegate the task to it.
+
+If no suitable skill exists, perform the missing analysis yourself as a fallback and explicitly mark it as:
+
+`FALLBACK ANALYSIS — no suitable specialist skill available`
+
+Never invent skill names.
+
+---
+
+# Input
+
+The orchestrator may receive:
+
+* website URL;
+* target market;
+* product/service description;
+* target audience / ICP;
+* business model;
+* desired conversion;
+* known competitors;
+* analytics data;
+* traffic sources;
+* existing problems;
+* business constraints;
+* requested redesign scope.
+
+Minimum required input:
+
+`website URL`
+
+If critical business context is missing, infer only what can be reasonably established from the website.
+
+Do not invent:
+
+* ICP;
+* revenue;
+* conversion rate;
+* traffic;
+* customer behavior;
+* market share;
+* customer objections;
+* competitor advantages.
+
+Clearly distinguish assumptions from observed facts.
+
+---
+
+# Phase 1 — Environment and Skill Discovery
+
+Before the audit:
+
+1. Discover available skills.
+2. Read the descriptions/instructions of potentially relevant skills.
+3. Build a capability map.
+
+Example capability map:
+
+| Capability            | Candidate skill                          |
+| --------------------- | ---------------------------------------- |
+| General website audit | best available website-audit skill       |
+| Copy                  | best available copywriting skill         |
+| UX                    | best available UX audit skill            |
+| Conversion            | best available CRO/conversion skill      |
+| SEO                   | best available SEO skill                 |
+| Performance           | best available performance skill         |
+| Accessibility         | best available accessibility skill       |
+| Competitors           | best available research/competitor skill |
+| Analytics             | best available analytics skill           |
+| Visual design         | best available visual/UI skill           |
+
+The actual installed skill names must come from the current environment.
+
+Do not assume that the names in this document exist verbatim.
+
+---
+
+# Phase 2 — Website Classification
+
+Before selecting the pipeline, classify the website.
+
+Determine:
+
+### Website type
+
+Possible categories include:
+
+* landing page;
+* corporate website;
+* B2B service;
+* B2C service;
+* SaaS;
+* marketplace;
+* e-commerce;
+* portfolio;
+* media/content;
+* community;
+* application/product;
+* local business;
+* mixed model.
+
+### Primary business objective
+
+Examples:
+
+* purchase;
+* lead;
+* demo booking;
+* registration;
+* free trial;
+* consultation;
+* phone call;
+* contact request;
+* subscription;
+* download;
+* account creation;
+* store visit.
+
+### Primary conversion path
+
+Map:
+
+`entry → understanding → trust → desire → CTA → action → next step`
+
+### Target audience
+
+Identify:
+
+* likely ICP;
+* user sophistication;
+* likely intent;
+* likely pain points;
+* decision-making complexity.
+
+If these cannot be established reliably, mark them as assumptions.
+
+---
+
+# Phase 3 — Dynamic Pipeline Construction
+
+Do NOT blindly run every available skill.
+
+Select skills based on the website type, business model, and objective.
+
+## Typical landing page pipeline
+
+Use relevant skills for:
+
+1. first impression;
+2. positioning;
+3. offer;
+4. copywriting;
+5. trust;
+6. objections;
+7. CTA;
+8. conversion;
+9. UX;
+10. visual hierarchy;
+11. friction;
+12. performance;
+13. SEO;
+14. accessibility.
+
+## Typical B2B SaaS pipeline
+
+Prioritize:
+
+1. ICP;
+2. positioning;
+3. problem/value proposition;
+4. product explanation;
+5. differentiation;
+6. trust;
+7. social proof;
+8. objections;
+9. demo/trial CTA;
+10. funnel;
+11. UX;
+12. copy;
+13. SEO;
+14. performance;
+15. analytics.
+
+## Typical e-commerce pipeline
+
+Prioritize:
+
+1. product discovery;
+2. product presentation;
+3. value proposition;
+4. pricing;
+5. product benefits;
+6. trust;
+7. reviews;
+8. objections;
+9. shipping/payment information;
+10. product page UX;
+11. cart;
+12. checkout;
+13. conversion friction;
+14. performance;
+15. SEO.
+
+## Typical corporate/service website
+
+Prioritize:
+
+1. positioning;
+2. services;
+3. differentiation;
+4. credibility;
+5. case studies;
+6. trust;
+7. objections;
+8. lead generation;
+9. CTA;
+10. UX;
+11. copy;
+12. SEO;
+13. performance.
+
+The orchestrator must adapt this pipeline rather than mechanically following it.
+
+---
+
+# Phase 4 — Audit Execution
+
+## Parallelization
+
+Run independent analyses in parallel when the environment permits.
+
+For example:
+
+* Copy audit
+* UX audit
+* SEO audit
+* Performance audit
+* Trust audit
+* Conversion audit
+
+can generally run independently.
+
+Sequential execution is required when one stage depends materially on another.
+
+Example:
+
+`website classification → specialist audits → synthesis → proposed redesign → re-audit`
+
+Do not parallelize tasks that modify the same artifact or depend on unresolved upstream findings.
+
+---
+
+# Phase 5 — Mandatory First-Impression Audit
+
+Perform a dedicated first-impression analysis.
+
+Simulate a new visitor who knows nothing about the company.
+
+Analyze what can be understood within approximately 3–5 seconds.
+
+Answer:
+
+1. What is this?
+2. Who is it for?
+3. What problem does it solve?
+4. Why should I care?
+5. Why should I trust it?
+6. What should I do next?
+
+Evaluate:
+
+* headline;
+* subheadline;
+* hero visual;
+* CTA;
+* navigation;
+* above-the-fold hierarchy;
+* cognitive load;
+* differentiation;
+* immediate credibility.
+
+Do not claim actual user behavior.
+
+This is a heuristic simulation, not measured user research.
+
+---
+
+# Phase 6 — Specialist Audit Execution
+
+For each selected specialist skill:
+
+1. Provide the original website context.
+2. Provide the business objective.
+3. Provide relevant findings from earlier stages when useful.
+4. Ask for concrete evidence.
+5. Request actionable recommendations.
+6. Avoid requesting generic advice.
+
+Every finding should identify:
+
+* location;
+* observed problem;
+* why it matters;
+* likely mechanism;
+* recommendation;
+* confidence.
+
+Example:
+
+`Hero → headline`
+
+Observed:
+
+The headline describes the company rather than the customer's outcome.
+
+Why it matters:
+
+A first-time visitor must infer the value proposition instead of receiving it immediately.
+
+Recommendation:
+
+Rewrite the headline around the primary customer outcome.
+
+Confidence:
+
+High — directly observable.
+
+---
+
+# Evidence Rules
+
+Every substantive finding must be classified as one of:
+
+### OBSERVED
+
+Directly visible or measurable.
+
+### MEASURED
+
+Supported by actual data such as:
+
+* analytics;
+* Lighthouse;
+* Core Web Vitals;
+* accessibility tooling;
+* source inspection;
+* performance measurement.
+
+### HEURISTIC
+
+Professional judgment based on established UX/CRO/copy principles.
+
+### HYPOTHESIS
+
+A plausible explanation that requires validation.
+
+Never present a hypothesis as an observed fact.
+
+Never invent:
+
+* conversion rates;
+* bounce rates;
+* CTR;
+* revenue impact;
+* user preferences;
+* A/B test results;
+* customer opinions.
+
+---
+
+# Phase 7 — Cross-Audit Synthesis
+
+This is one of the most important stages.
+
+Do not simply concatenate specialist reports.
+
+Find relationships between their findings.
+
+Example:
+
+Copy audit:
+
+> Value proposition is unclear.
+
+UX audit:
+
+> Hero contains too many competing elements.
+
+Conversion audit:
+
+> Primary CTA is visually weak.
+
+Do NOT output three unrelated problems.
+
+Synthesize them into one root cause:
+
+> **Root cause: weak above-the-fold value proposition hierarchy.**
+
+Then explain:
+
+* headline does not communicate the primary outcome;
+* excessive hero content competes with the message;
+* CTA does not visually reinforce the desired action.
+
+This produces a significantly more useful audit.
+
+---
+
+# Root Cause Analysis
+
+For every major problem ask:
+
+`What is the underlying reason these symptoms exist?`
+
+Prefer:
+
+`Root cause → symptoms → consequences → solution`
+
+over:
+
+`problem 1 → problem 2 → problem 3`
+
+Possible root-cause categories:
+
+* unclear positioning;
+* weak value proposition;
+* wrong information hierarchy;
+* insufficient trust;
+* excessive cognitive load;
+* unclear CTA;
+* excessive friction;
+* missing objection handling;
+* poor product explanation;
+* weak differentiation;
+* poor funnel continuity;
+* technical friction;
+* inconsistent visual hierarchy.
+
+---
+
+# Phase 8 — Conversion Funnel Analysis
+
+Map the complete conversion path.
+
+Example:
+
+`Landing → Hero → Value proposition → Proof → Benefits → Objections → CTA → Form → Confirmation`
+
+For each transition ask:
+
+1. Does the user understand why to continue?
+2. Is the next action obvious?
+3. Is trust sufficient?
+4. Is there unnecessary friction?
+5. Is the information required for this decision available?
+6. Does the page answer the likely objection before asking for commitment?
+
+Identify:
+
+* leaks;
+* unnecessary steps;
+* weak transitions;
+* missing information;
+* premature CTAs;
+* excessive form fields;
+* trust gaps.
+
+---
+
+# Phase 9 — Trust and Objection Analysis
+
+Identify the likely questions a buyer needs answered before converting.
+
+Examples:
+
+* Is this legitimate?
+* Will it work for my situation?
+* Why should I choose this?
+* How much does it cost?
+* What happens after I submit the form?
+* Is there a guarantee?
+* Who has used this?
+* How long does implementation take?
+* What are the risks?
+* Can I cancel?
+* What support exists?
+
+Check whether the website answers these questions.
+
+Use only objections supported by:
+
+* website context;
+* product category;
+* visible offer;
+* known business context;
+* specialist analysis.
+
+Mark assumptions as hypotheses.
+
+---
+
+# Phase 10 — Friction Audit
+
+Search for unnecessary friction across the journey.
+
+Check:
+
+* unclear navigation;
+* confusing terminology;
+* excessive choices;
+* unnecessary forms;
+* excessive form fields;
+* unclear pricing;
+* missing delivery information;
+* weak CTA;
+* forced registration;
+* broken links;
+* inconsistent states;
+* unclear feedback;
+* mobile issues;
+* slow-loading elements;
+* inaccessible controls.
+
+Separate:
+
+`conversion friction`
+
+from:
+
+`technical defect`
+
+from:
+
+`intentional business requirement`.
+
+Do not recommend removing friction that is necessary for compliance, security, qualification, or business logic without acknowledging the trade-off.
+
+---
+
+# Phase 11 — SEO / Performance / Accessibility
+
+Run these only when relevant.
+
+Separate them from conversion findings.
+
+Examples:
+
+### SEO
+
+* search intent;
+* information architecture;
+* titles;
+* headings;
+* semantic structure;
+* indexability;
+* internal linking;
+* structured data where appropriate.
+
+### Performance
+
+Use actual measurements where possible.
+
+Inspect:
+
+* loading performance;
+* LCP;
+* CLS;
+* INP;
+* JavaScript cost;
+* images;
+* fonts;
+* third-party scripts.
+
+Do not invent performance metrics.
+
+### Accessibility
+
+Inspect:
+
+* keyboard navigation;
+* semantic HTML;
+* labels;
+* contrast;
+* focus states;
+* form accessibility;
+* alt text;
+* interactive controls.
+
+---
+
+# Phase 12 — Competitor / Market Analysis
+
+Only run competitor research when:
+
+* competitors are known;
+* relevant competitors can be identified reliably;
+* the task requires positioning/differentiation;
+* web research is available.
+
+Do not turn competitor analysis into a generic collection of screenshots.
+
+Compare:
+
+* positioning;
+* offer;
+* messaging;
+* pricing presentation;
+* proof;
+* CTA;
+* differentiation;
+* information architecture;
+* trust mechanisms.
+
+The purpose is to identify:
+
+`market expectations + differentiation opportunities`
+
+not to copy competitors.
+
+---
+
+# Phase 13 — Prioritization
+
+Prioritize findings using:
+
+`Impact × Confidence × Effort`
+
+This is a prioritization heuristic, not an empirical score.
+
+Use qualitative levels:
+
+### CRITICAL
+
+Likely blocks understanding or conversion and should be addressed first.
+
+### HIGH
+
+Material conversion/business problem.
+
+### MEDIUM
+
+Meaningful improvement opportunity.
+
+### LOW
+
+Optimization or polish.
+
+For each recommendation provide:
+
+* priority;
+* root cause;
+* evidence;
+* expected mechanism;
+* implementation difficulty;
+* dependencies.
+
+Do not claim exact revenue uplift unless supported by real data.
+
+---
+
+# Phase 14 — Recommended New Website Composition
+
+The audit must eventually answer:
+
+> "How should the website be composed differently?"
+
+Do not stop at criticism.
+
+Produce a proposed structure.
+
+Example:
+
+```text
+1. Header
+   - Logo
+   - Primary navigation
+   - Primary CTA
+
+2. Hero
+   - Outcome-focused headline
+   - Supporting explanation
+   - Primary CTA
+   - Trust signal
+
+3. Problem
+   - User pain
+   - Consequences
+
+4. Solution
+   - How the product/service solves it
+
+5. Benefits
+   - 3–5 key outcomes
+
+6. How it works
+   - 3–4 steps
+
+7. Social proof
+   - Customers
+   - Reviews
+   - Cases
+   - Metrics where verified
+
+8. Objections / FAQ
+
+9. Pricing / commercial information
+
+10. Final CTA
+
+11. Footer
+```
+
+This is only an example.
+
+Generate the actual structure from the audit findings and business model.
+
+For every major section explain:
+
+* purpose;
+* user question answered;
+* content required;
+* CTA relationship;
+* why it belongs at that position.
+
+---
+
+# Phase 15 — Copy Recommendations
+
+When copy is a major problem, do not merely say:
+
+> "Rewrite the copy."
+
+Provide concrete direction.
+
+Where useful provide:
+
+* headline concept;
+* subheadline concept;
+* CTA concept;
+* section purpose;
+* messaging hierarchy;
+* benefit framing;
+* objection handling.
+
+Do not fabricate testimonials, statistics, guarantees, customer logos, or claims.
+
+---
+
+# Phase 16 — Experimentation
+
+Identify changes suitable for validation.
+
+Examples:
+
+* headline variants;
+* CTA wording;
+* hero structure;
+* form length;
+* pricing presentation;
+* proof placement;
+* objection handling;
+* navigation simplification.
+
+For each experiment specify:
+
+* hypothesis;
+* control;
+* variant;
+* primary metric;
+* secondary metric;
+* required sample/data considerations if known.
+
+Do not predict the winning variant.
+
+---
+
+# Phase 17 — Analytics and Measurement Gaps
+
+Determine whether the website can actually measure the desired conversion.
+
+Check for appropriate events such as:
+
+* CTA click;
+* form start;
+* form completion;
+* registration;
+* checkout start;
+* purchase;
+* demo booking;
+* phone click;
+* outbound click;
+* scroll depth where useful.
+
+Identify important missing instrumentation.
+
+Do not claim analytics exists unless verified.
+
+---
+
+# Phase 18 — Final Audit
+
+Before producing the final report, verify:
+
+### Coverage
+
+Were the important dimensions for this website type audited?
+
+### Evidence
+
+Does each major recommendation have evidence?
+
+### Deduplication
+
+Were overlapping specialist findings merged?
+
+### Business relevance
+
+Does every major recommendation connect to:
+
+`user problem → business objective → website mechanism`?
+
+### Architecture
+
+Does the proposed website structure address the identified root causes?
+
+### Consistency
+
+Do copy, UX, visual hierarchy, CTA, and funnel recommendations agree?
+
+### Technical reality
+
+Are recommendations compatible with the actual website?
+
+### Uncertainty
+
+Are assumptions clearly labeled?
+
+### No invented metrics
+
+No unsupported conversion, revenue, traffic, or behavioral claims.
+
+---
+
+# Optional Re-Audit After Changes
+
+If the user implements changes:
+
+1. inspect the changed website;
+2. compare against the original audit;
+3. verify whether targeted problems were actually resolved;
+4. run relevant specialist skills again;
+5. check for regressions;
+6. check whether new friction was introduced;
+7. update recommendations.
+
+Never assume that an implemented change is successful merely because it matches the recommendation.
+
+---
+
+# Final Output Format
+
+The final response should be structured approximately as follows:
+
+## 1. Executive Summary
+
+A concise explanation of:
+
+* what the website does;
+* who it appears to target;
+* primary conversion objective;
+* major business/conversion blockers;
+* most important structural opportunities.
+
+## 2. Website Understanding
+
+* business model;
+* target audience;
+* offer;
+* conversion path;
+* assumptions.
+
+## 3. First Impression
+
+Answer:
+
+* What is it?
+* Who is it for?
+* Why care?
+* Why trust?
+* What next?
+
+## 4. Major Root Causes
+
+A deduplicated list of the fundamental problems.
+
+## 5. Findings
+
+Group findings by:
+
+* positioning;
+* copy;
+* UX;
+* conversion;
+* trust;
+* funnel;
+* visual hierarchy;
+* SEO;
+* performance;
+* accessibility;
+* analytics;
+* competitors.
+
+Only include relevant categories.
+
+## 6. Priority Improvements
+
+For each:
+
+```text
+Priority:
+Root cause:
+Evidence:
+Problem:
+Recommendation:
+Expected mechanism:
+Effort:
+Confidence:
+Dependencies:
+```
+
+## 7. Recommended Website Composition
+
+Provide the proposed page/website structure in order.
+
+For every section:
+
+* purpose;
+* content;
+* CTA;
+* reason for placement.
+
+## 8. Copy Direction
+
+Provide concrete messaging recommendations where appropriate.
+
+## 9. Experiment Ideas
+
+List high-value hypotheses that should be validated.
+
+## 10. Analytics Gaps
+
+Explain what should be measured.
+
+## 11. Verification Status
+
+Explicitly state:
+
+* audited;
+* measured;
+* inferred;
+* not verified;
+* requires real user/analytics data.
+
+## 12. Next Implementation Plan
+
+Convert the recommendations into a practical implementation sequence.
+
+Prefer:
+
+`P0 → P1 → P2`
+
+rather than an enormous unordered backlog.
+
+---
+
+# Orchestration Rules
+
+## Rule 1 — Do not blindly execute every skill
+
+Only use skills relevant to the website.
+
+## Rule 2 — Do not duplicate specialist expertise
+
+Delegate whenever a suitable skill exists.
+
+## Rule 3 — Do not trust specialist output blindly
+
+Every specialist result must be evaluated during synthesis.
+
+## Rule 4 — Evidence over opinion
+
+Recommendations must be grounded in observable evidence or clearly labeled heuristics.
+
+## Rule 5 — Root causes over symptoms
+
+Merge related observations into a smaller number of meaningful problems.
+
+## Rule 6 — Business outcome over aesthetic preference
+
+A visually attractive change is not automatically a conversion improvement.
+
+## Rule 7 — No fabricated data
+
+Never invent analytics, conversion rates, customer behavior, market data, testimonials, or performance metrics.
+
+## Rule 8 — Separate fact from hypothesis
+
+Always distinguish:
+
+`observed → measured → heuristic → hypothesis`.
+
+## Rule 9 — Recommendations must be actionable
+
+Avoid vague statements such as:
+
+* improve UX;
+* make the copy better;
+* add more trust;
+* optimize conversion.
+
+Explain exactly what should change and why.
+
+## Rule 10 — Do not prematurely redesign
+
+Understand the current site and root causes before proposing a new composition.
+
+## Rule 11 — Preserve valid existing functionality
+
+If the task includes an existing production website, recommendations must not casually remove useful functionality merely to simplify the interface.
+
+## Rule 12 — Final output must be synthesized
+
+The user should receive one coherent audit, not separate reports pasted together.
+
+---
+
+# Definition of Done
+
+The audit is complete only when:
+
+* the website has been classified;
+* relevant existing skills have been identified;
+* an appropriate pipeline has been selected;
+* relevant specialist audits have been executed;
+* findings have evidence;
+* assumptions are labeled;
+* overlapping findings have been reconciled;
+* root causes have been identified;
+* conversion path has been analyzed;
+* priorities have been established;
+* a concrete improved website composition has been proposed;
+* measurement gaps have been identified;
+* final coverage and consistency checks have been performed.
+
+If some stage could not be performed, explicitly state:
+
+`NOT VERIFIED`
+
+and explain why.
+
+Never report an incomplete audit as fully complete.
+
+  
