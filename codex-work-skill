@@ -1,0 +1,905 @@
+# SKILL 1 — CHANGE IMPACT & REGRESSION GUARDIAN
+
+## PURPOSE
+
+This skill governs every non-trivial change in an existing codebase.
+
+The primary objective is NOT merely to implement the requested feature.
+The objective is to implement it while preserving:
+
+- existing architecture;
+- existing business logic;
+- existing security guarantees;
+- existing cryptographic mechanisms;
+- existing API contracts;
+- existing user flows;
+- existing UI/UX behavior;
+- existing performance characteristics;
+- existing reliability;
+- existing data compatibility;
+- existing integrations.
+
+A feature is NOT considered complete merely because new code works.
+
+The agent MUST prove that existing functionality still works correctly after the change.
+
+---
+
+## ABSOLUTE RULE
+
+Never claim that a feature is:
+
+- done;
+- complete;
+- fully implemented;
+- fully integrated;
+- all chats are encrypted;
+- all flows are working;
+- regression-free;
+
+unless the corresponding implementation AND verification have actually been performed.
+
+If verification was not performed, explicitly state:
+
+NOT VERIFIED.
+
+Never infer successful verification from code inspection alone.
+
+---
+
+# 1. BEFORE CHANGING CODE
+
+Before implementation, inspect the existing repository.
+
+Identify:
+
+1. Existing implementations of the requested functionality.
+2. Existing abstractions/services/components that already solve part of the problem.
+3. Existing crypto mechanisms.
+4. Existing data flow.
+5. Existing request/response flow.
+6. Existing event flow.
+7. Existing UI flow.
+8. Existing tests.
+9. Existing E2E/Playwright tests.
+10. Existing performance-sensitive paths.
+11. Existing public/internal APIs.
+12. Existing persistence/storage mechanisms.
+13. Existing error handling.
+14. Existing authorization/authentication.
+15. Existing observability/logging.
+
+Do NOT immediately create a new implementation.
+
+First determine:
+
+"How does the application currently solve this?"
+
+Prefer extending existing mechanisms over creating parallel implementations.
+
+---
+
+# 2. CHANGE IMPACT MAP
+
+Before coding, create an internal impact map.
+
+At minimum identify:
+
+Requirement
+→ entry points
+→ domain/service layer
+→ security/crypto layer
+→ persistence
+→ messaging/events
+→ transport/network
+→ frontend state
+→ UI
+→ tests
+→ E2E
+→ performance-sensitive paths.
+
+Identify both:
+
+DIRECT IMPACT
+and
+INDIRECT IMPACT.
+
+Examples of indirect impact:
+
+- changing message encryption can affect file messages;
+- changing authentication can affect WebSocket connections;
+- changing call initialization can affect WebRTC;
+- changing message DTOs can affect old clients;
+- changing chat state can affect unread counters;
+- changing crypto initialization can affect reconnect;
+- changing database queries can affect pagination performance.
+
+Do not assume that only the edited files are affected.
+
+---
+
+# 3. EXISTING MECHANISM REUSE
+
+Before introducing a new implementation, search the entire repository for an existing mechanism with the same responsibility.
+
+Examples:
+
+- encryption;
+- key acquisition;
+- key rotation;
+- message serialization;
+- file upload;
+- media upload;
+- WebRTC initialization;
+- authentication;
+- authorization;
+- event publishing;
+- notification;
+- retry;
+- caching;
+- persistence;
+- validation.
+
+If an existing mechanism exists:
+
+1. Reuse it.
+2. Extend it if necessary.
+3. Refactor it only when justified.
+4. Do NOT create a second simplified implementation.
+
+A new parallel implementation requires explicit justification.
+
+If the existing implementation is unsuitable, explain why before replacing or bypassing it.
+
+---
+
+# 4. REGRESSION CHECK — FUNCTIONALITY
+
+After implementation, verify all affected existing flows.
+
+Do not test only the new feature.
+
+For every affected mechanism verify:
+
+- normal operation;
+- existing operation;
+- error handling;
+- retry behavior;
+- reconnect behavior;
+- concurrent behavior;
+- empty/null cases;
+- permission failures;
+- expired credentials;
+- partially initialized state;
+- application restart;
+- relevant edge cases.
+
+The question is:
+
+"Does the old functionality still behave exactly as intended?"
+
+Not merely:
+
+"Does the new functionality work?"
+
+---
+
+# 5. REGRESSION CHECK — UI
+
+Any frontend change MUST include UI regression verification.
+
+Verify:
+
+- existing layout;
+- spacing;
+- sizing;
+- alignment;
+- typography;
+- icons;
+- buttons;
+- menus;
+- dialogs;
+- responsive behavior;
+- scrolling;
+- loading states;
+- empty states;
+- error states;
+- disabled states;
+- hover/focus states;
+- message rendering;
+- media rendering;
+- existing navigation;
+- existing interactions.
+
+Do NOT accept a UI regression merely because the feature technically works.
+
+Examples of regression:
+
+- component moved unexpectedly;
+- message layout changed;
+- controls disappeared;
+- existing buttons changed size;
+- mobile layout broke;
+- scroll behavior changed;
+- media preview became distorted;
+- existing component was replaced with a visually inferior implementation.
+
+If a screenshot or visual baseline exists, compare against it.
+
+If Playwright is available, use it.
+
+---
+
+# 6. REGRESSION CHECK — PERFORMANCE
+
+For every change touching a performance-sensitive mechanism, verify performance.
+
+Relevant areas include:
+
+- database queries;
+- message loading;
+- chat history;
+- WebSocket;
+- WebRTC;
+- encryption/decryption;
+- file upload/download;
+- media processing;
+- rendering;
+- React state updates;
+- Kafka;
+- Redis;
+- network calls;
+- serialization;
+- large lists;
+- pagination.
+
+Compare behavior BEFORE and AFTER when practical.
+
+Check:
+
+- latency;
+- number of network requests;
+- number of database queries;
+- payload size;
+- CPU usage;
+- memory usage;
+- rendering behavior;
+- unnecessary re-renders;
+- startup time;
+- encryption overhead;
+- upload/download throughput.
+
+Do not accept a feature that is functionally correct but introduces an unjustified performance regression.
+
+If exact benchmarking is unavailable, explicitly state that performance was not quantitatively verified.
+
+---
+
+# 7. REGRESSION CHECK — SEMANTIC BEHAVIOR
+
+Preserve the semantics of existing mechanisms.
+
+Do not silently change:
+
+- ordering;
+- lifecycle;
+- state transitions;
+- retry semantics;
+- idempotency;
+- transactional boundaries;
+- consistency guarantees;
+- event ordering;
+- authorization semantics;
+- encryption guarantees;
+- message delivery semantics.
+
+If behavior intentionally changes, explicitly identify the old behavior and the new behavior.
+
+---
+
+# 8. REGRESSION CHECK — SECURITY
+
+Never weaken existing security mechanisms for implementation convenience.
+
+Verify:
+
+- authentication;
+- authorization;
+- encryption;
+- key management;
+- validation;
+- input handling;
+- secrets handling;
+- access control;
+- transport security;
+- data-at-rest protection.
+
+Never replace an existing security mechanism with a simplified local implementation merely because it is easier.
+
+---
+
+# 9. DATABASE AND DATA COMPATIBILITY
+
+Before modifying persistence:
+
+Check:
+
+- existing records;
+- existing schema;
+- migrations;
+- nullable fields;
+- indexes;
+- constraints;
+- old data;
+- backward compatibility;
+- concurrent access;
+- transaction boundaries.
+
+Do not assume an empty database.
+
+Existing production-like data must remain valid.
+
+---
+
+# 10. API COMPATIBILITY
+
+Before modifying an API:
+
+Check:
+
+- backend callers;
+- frontend callers;
+- WebSocket clients;
+- event consumers;
+- external integrations;
+- DTOs;
+- serialization;
+- error contracts.
+
+Do not silently break existing consumers.
+
+---
+
+# 11. PLAYWRIGHT / E2E
+
+When Playwright or another E2E framework exists:
+
+1. Identify existing affected tests.
+2. Run them before modification when possible.
+3. Implement the change.
+4. Run affected tests again.
+5. Add tests for the new behavior.
+6. Test important negative cases.
+7. Test the complete user flow, not only the changed component.
+
+Never treat:
+
+"Playwright started successfully"
+
+as equivalent to:
+
+"the feature works."
+
+Tests must contain meaningful assertions.
+
+---
+
+# 12. BASELINE
+
+For important changes establish a baseline before modifying code.
+
+Record where practical:
+
+- existing tests;
+- build status;
+- E2E status;
+- key UI flows;
+- performance-sensitive behavior;
+- important API behavior.
+
+After implementation compare against the baseline.
+
+Any unexpected regression must be investigated.
+
+---
+
+# 13. FINAL DIFF REVIEW
+
+Before declaring completion:
+
+Inspect the final diff.
+
+Look specifically for:
+
+- accidental changes;
+- duplicated implementations;
+- dead code;
+- debug code;
+- temporary workarounds;
+- unrelated refactors;
+- changed UI behavior;
+- bypassed abstractions;
+- security shortcuts;
+- unnecessary dependencies;
+- altered configuration;
+- changed error handling.
+
+If unrelated changes appeared, investigate them.
+
+---
+
+# 14. DEFINITION OF DONE
+
+A task can be marked DONE only when:
+
+[ ] requested functionality implemented
+[ ] existing mechanisms reused where appropriate
+[ ] impact analysis completed
+[ ] affected existing functionality tested
+[ ] UI regression checked
+[ ] performance impact checked where relevant
+[ ] security behavior checked
+[ ] API compatibility checked
+[ ] data compatibility checked
+[ ] Playwright/E2E checked where applicable
+[ ] negative scenarios checked
+[ ] final diff reviewed
+[ ] no known regression remains
+
+If any applicable item is unchecked:
+
+STATUS = NOT DONE.
+
+---
+
+# SKILL 2 — INVARIANT DRIVEN DEVELOPMENT
+
+## PURPOSE
+
+Complex systems must preserve domain and architectural invariants.
+
+Do not implement requirements as isolated code changes.
+
+First identify the rules that MUST ALWAYS remain true.
+
+---
+
+# 1. EXTRACT INVARIANTS
+
+Before implementation identify:
+
+- security invariants;
+- ordering invariants;
+- lifecycle invariants;
+- state-machine invariants;
+- transactional invariants;
+- consistency invariants;
+- cryptographic invariants;
+- authorization invariants;
+- data invariants.
+
+Examples:
+
+"Keys must exist before encrypted communication starts."
+
+"Authorization must occur before protected resource access."
+
+"Message encryption must happen before transport."
+
+"Decryption must happen only after the required key is available."
+
+"Call establishment must not precede cryptographic session preparation."
+
+These are invariants, not implementation suggestions.
+
+---
+
+# 2. MODEL DEPENDENCIES
+
+For every complex flow determine:
+
+PRECONDITIONS
+→ ACTION
+→ POSTCONDITIONS.
+
+Example:
+
+prepareKeys()
+→ establishEncryptedSession()
+→ createCall()
+→ signaling
+→ media
+
+Do NOT implement:
+
+createCall()
+→ requestKeys()
+
+if the domain requires keys before call establishment.
+
+---
+
+# 3. TRACE THE ACTUAL EXECUTION PATH
+
+Do not trust names.
+
+A method named:
+
+initializeEncryption()
+
+does not prove encryption actually occurs.
+
+Trace:
+
+caller
+→ service
+→ repository
+→ network
+→ state
+→ actual runtime behavior.
+
+Verify where the operation actually occurs.
+
+---
+
+# 4. CREATE INVARIANT TESTS
+
+For every critical invariant create a test or verification.
+
+Example:
+
+GIVEN no crypto session exists
+
+WHEN startCall()
+
+THEN key acquisition MUST occur before call establishment.
+
+The test must fail if the ordering is reversed.
+
+---
+
+# 5. NEVER HIDE VIOLATIONS
+
+If implementation violates an invariant:
+
+STOP.
+
+Do not work around it silently.
+
+Explain:
+
+- violated invariant;
+- where violation occurs;
+- why it occurs;
+- required architectural correction.
+
+---
+
+# 6. CRYPTOGRAPHIC INVARIANTS
+
+For cryptographic functionality verify:
+
+- correct key source;
+- correct key lifecycle;
+- correct key scope;
+- correct encryption boundary;
+- correct decryption boundary;
+- correct nonce/IV handling;
+- correct authentication/integrity;
+- correct rotation;
+- correct participant handling;
+- correct failure behavior.
+
+Never create simplified crypto solely for a new media type if a canonical crypto pipeline already exists.
+
+---
+
+# 7. COVERAGE MATRIX
+
+For cross-cutting features create a coverage matrix.
+
+Example:
+
+| Flow | Text | Image | File | Voice | Video | Call | Screen |
+|---|---|---|---|---|---|---|---|
+| P2P | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Group | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Channel | ✓ | ✓ | ✓ | ✓ | ✓ | N/A | N/A |
+
+Every applicable cell must be verified.
+
+Never claim:
+
+"encrypted everywhere"
+
+until every applicable flow is checked.
+
+---
+
+# SKILL 3 — VERIFICATION FIRST / DEFINITION OF DONE
+
+## PURPOSE
+
+Prevent false completion claims.
+
+The agent must treat implementation and verification as two separate phases.
+
+---
+
+# 1. IMPLEMENTATION ≠ COMPLETION
+
+Writing code does not mean the task is complete.
+
+Completion requires evidence.
+
+---
+
+# 2. REQUIRED FINAL REPORT
+
+Every complex task must finish with:
+
+IMPLEMENTED:
+- exact changes made
+
+VERIFIED:
+- exact tests executed
+- exact flows tested
+- exact UI flows checked
+- exact performance checks performed
+
+NOT VERIFIED:
+- anything that could not be checked
+
+KNOWN LIMITATIONS:
+- remaining limitations
+
+REGRESSIONS FOUND:
+- any regressions discovered
+
+REGRESSIONS FIXED:
+- what was fixed
+
+STATUS:
+DONE / NOT DONE
+
+---
+
+# 3. NO UNSUPPORTED CLAIMS
+
+Never say:
+
+"all chats are encrypted"
+
+unless every relevant chat type was verified.
+
+Never say:
+
+"everything works"
+
+unless the relevant flows were tested.
+
+Never say:
+
+"Playwright verified it"
+
+unless meaningful assertions actually passed.
+
+Never say:
+
+"no regressions"
+
+unless regression checks were actually performed.
+
+---
+
+# 4. FAILURE LOOP
+
+If a test fails:
+
+1. Inspect failure.
+2. Identify root cause.
+3. Fix root cause.
+4. Re-run failed test.
+5. Re-run related tests.
+6. Re-run broader regression tests if the fix touches shared code.
+7. Repeat until passing.
+
+Do not stop after the first implementation attempt.
+
+---
+
+# 5. VISUAL VERIFICATION
+
+For UI work:
+
+implementation
+→ build
+→ run application
+→ execute Playwright
+→ inspect actual UI
+→ compare against expected behavior
+→ fix regressions
+→ rerun.
+
+A successful build is NOT visual verification.
+
+---
+
+# 6. COMPLEX TASK LOOP
+
+For large tasks:
+
+RESEARCH
+→ IMPACT ANALYSIS
+→ PLAN
+→ IMPLEMENT
+→ UNIT TEST
+→ INTEGRATION TEST
+→ E2E
+→ UI REGRESSION
+→ PERFORMANCE CHECK
+→ SECURITY CHECK
+→ DIFF REVIEW
+→ FINAL AUDIT
+→ DONE
+
+Never skip directly from IMPLEMENT to DONE.
+
+---
+
+# SKILL 4 — EXISTING ARCHITECTURE PRESERVATION
+
+## PURPOSE
+
+Prevent architectural drift and accidental creation of parallel systems.
+
+The existing application is the source of truth.
+
+Do not redesign existing architecture merely because another approach appears cleaner in isolation.
+
+---
+
+# 1. EXISTING SYSTEM FIRST
+
+Before introducing an abstraction:
+
+Search for:
+
+- existing interfaces;
+- services;
+- repositories;
+- factories;
+- adapters;
+- crypto services;
+- media services;
+- transport abstractions;
+- state management;
+- shared UI components;
+- shared utilities.
+
+Determine the canonical mechanism.
+
+---
+
+# 2. EXTEND BEFORE DUPLICATING
+
+Preferred order:
+
+1. Reuse.
+2. Extend.
+3. Refactor.
+4. Replace.
+
+Do not jump directly to replacement.
+
+---
+
+# 3. NO LOCAL MINI-IMPLEMENTATIONS
+
+Do not implement a simplified local version of a system-wide mechanism.
+
+Examples:
+
+BAD:
+
+existing encryption service
++
+special encryption for voice
++
+special encryption for video
++
+special encryption for files.
+
+PREFERRED:
+
+canonical encryption pipeline
+→ text
+→ files
+→ voice
+→ video
+→ other supported media.
+
+The same principle applies to:
+
+- authorization;
+- key management;
+- API calls;
+- uploads;
+- downloads;
+- event handling;
+- error handling;
+- retries;
+- caching.
+
+---
+
+# 4. ARCHITECTURAL CONSISTENCY
+
+New functionality must follow existing:
+
+- naming;
+- layering;
+- dependency direction;
+- error handling;
+- logging;
+- configuration;
+- testing;
+- lifecycle;
+- security boundaries.
+
+Do not introduce a completely different pattern for one feature without explicit justification.
+
+---
+
+# 5. CROSS-CUTTING FEATURES
+
+For cross-cutting functionality such as:
+
+- encryption;
+- authentication;
+- authorization;
+- logging;
+- telemetry;
+- caching;
+- validation;
+
+prefer a centralized mechanism unless there is a documented reason not to.
+
+---
+
+# 6. NO UNAUTHORIZED REFACTORING
+
+Do not combine:
+
+"implement feature X"
+
+with:
+
+"rewrite architecture Y"
+
+unless architecture Y must change for X.
+
+Avoid unrelated cleanup during feature implementation.
+
+Every unrelated modification increases regression risk.
+
+---
+
+# 7. FINAL ARCHITECTURE AUDIT
+
+Before completion ask:
+
+1. Did I create a duplicate mechanism?
+2. Did I bypass an existing abstraction?
+3. Did I move logic across architectural boundaries?
+4. Did I change lifecycle/order semantics?
+5. Did I weaken security?
+6. Did I introduce a special-case implementation?
+7. Did I alter unrelated components?
+8. Did I introduce unnecessary dependencies?
+9. Did I preserve existing contracts?
+10. Does the new feature look like it belongs to this codebase?
+
+If any answer indicates unexpected architectural drift:
+
+STOP and correct it before declaring completion.
