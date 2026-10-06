@@ -1,0 +1,658 @@
+# Svyaz Shared Activity — совместный просмотр через browser extension
+
+## 1. Цель
+
+Реализовать в Svyaz механизм «Совместная активность», позволяющий пользователю в звонке запустить совместный просмотр видео со стороннего сайта.
+
+Видео не передаётся как screen share и не загружается отдельно каждым участником.
+
+Источник видео находится в браузере пользователя, запустившего активность. Специальное Svyaz Browser Extension обнаруживает выбранный пользователем видеоплеер на текущем сайте, получает его медиапоток, публикует его как WebRTC media track в LiveKit, а LiveKit раздаёт этот поток всем участникам звонка.
+
+Участники получают один общий удалённый WebRTC-поток и отображают его внутри окна Activity.
+
+---
+
+## 2. Основной принцип
+
+Архитектура:
+
+Browser Host
+→ Svyaz Extension
+→ выбранный HTML5 Media Player
+→ MediaStream / MediaStreamTrack
+→ LiveKit Publisher
+→ LiveKit SFU
+→ Remote Track участников
+→ Activity Player в Svyaz
+
+Важно:
+
+* не использовать screen sharing;
+* не создавать отдельный видеоплеер с исходным видео у каждого участника;
+* не заставлять каждого участника самостоятельно загружать фильм;
+* не синхронизировать несколько независимых декодеров;
+* видео декодируется на компьютере владельца активности;
+* публикуется один WebRTC media track;
+* LiveKit занимается SFU-раздачей этого track участникам.
+
+У владельца активности исходный плеер на сайте должен быть визуально скрыт/замаскирован после выбора источника. Пользователь продолжает находиться на исходном сайте, но фактический просмотр осуществляется через окно Activity Svyaz.
+
+---
+
+## 3. Пользовательский сценарий
+
+### Шаг 1. Запуск Activity
+
+Пользователь находится в звонке Svyaz.
+
+Нажимает:
+
+«Совместная активность» → «Совместный просмотр» → «Сторонний видеоплеер».
+
+Svyaz проверяет наличие Svyaz Extension.
+
+Если расширение отсутствует:
+
+«Для совместного просмотра необходимо установить Svyaz Extension».
+
+Если расширение установлено, Svyaz проверяет его авторизацию.
+
+Если расширение не авторизовано:
+
+«Авторизуйтесь в Svyaz Extension».
+
+Если всё готово, Svyaz создаёт Activity и отправляет расширению команду начала выбора источника.
+
+---
+
+## 4. Авторизация расширения
+
+Расширение должно быть связано с аккаунтом Svyaz.
+
+Рекомендуемый вариант:
+
+Svyaz Web App создаёт одноразовый authorization challenge.
+
+Расширение открывает Svyaz Authorization URL.
+
+Пользователь авторизуется своим аккаунтом Svyaz.
+
+После успешной авторизации сервер связывает:
+
+userId
++
+extensionId / installationId
++
+sessionId
+
+Расширение получает короткоживущий access token / session token и refresh mechanism.
+
+Не следует хранить пароль пользователя в расширении.
+
+Расширение должно иметь возможность проверить:
+
+* авторизован ли пользователь;
+* какой Svyaz userId ему принадлежит;
+* разрешено ли ему публиковать Activity;
+* какая Activity сейчас назначена этому расширению.
+
+---
+
+## 5. Выбор видеоплеера
+
+После запуска Activity расширение показывает небольшую floating-панель:
+
+«Перейдите на сайт с нужным видео.
+
+Когда страница будет открыта, нажмите "Выбрать плеер".»
+
+Пользователь открывает нужный сайт.
+
+Например:
+
+example.com/video
+
+Нажимает кнопку Svyaz Extension:
+
+«Выбрать плеер».
+
+Расширение анализирует текущую страницу и обнаруживает доступные media elements.
+
+Например:
+
+<video>
+<video>
+<video>
+
+Каждый доступный плеер визуально подсвечивается рамкой.
+
+При наведении:
+
+«Выбрать этот плеер».
+
+Пользователь нажимает на нужный плеер.
+
+---
+
+## 6. Подключение выбранного плеера
+
+После выбора расширение получает ссылку на конкретный HTMLMediaElement.
+
+Например:
+
+HTMLVideoElement.
+
+Далее расширение создаёт:
+
+MediaStream = video.captureStream()
+
+и получает:
+
+VideoTrack
+AudioTrack
+
+если браузер и источник позволяют получить соответствующие tracks.
+
+HTMLMediaElement.captureStream() предназначен именно для получения MediaStream содержимого, воспроизводимого media element, и MediaStream может использоваться как источник WebRTC.
+
+---
+
+## 7. Скрытие оригинального плеера
+
+После успешного подключения выбранный плеер больше не должен отображаться пользователю в обычном виде.
+
+На странице:
+
+исходный video element
+→ сохраняется рабочим
+→ продолжает воспроизводить media
+→ его визуальный вывод скрывается/заменяется чёрным placeholder.
+
+Например:
+
+original video
+→ display/visibility/layout replacement
+→ black rectangle
+
+При этом нельзя уничтожать video element или прекращать его playback, поскольку он является источником MediaStream.
+
+Важно отличать:
+
+«скрыть визуальный output элемента»
+
+от:
+
+«остановить элемент».
+
+Плеер должен продолжать работать как media source под контролем расширения.
+
+---
+
+## 8. Публикация в LiveKit
+
+Расширение передаёт полученный MediaStream в Svyaz Activity Media Publisher.
+
+Publisher публикует:
+
+activity-video-{activityId}
+activity-audio-{activityId}
+
+в существующий LiveKit room.
+
+LiveKit выступает SFU.
+
+Схема:
+
+Host Browser
+→ Extension
+→ MediaStreamTrack
+→ LiveKit Publisher
+→ LiveKit SFU
+→ Participants
+
+Участники не получают URL исходного фильма.
+
+Они получают:
+
+RemoteVideoTrack
+RemoteAudioTrack
+
+и отображают их в Activity UI.
+
+---
+
+## 9. Activity Player
+
+В Svyaz Activity отображается:
+
+* video;
+* audio;
+* play/pause;
+* seek;
+* volume;
+* fullscreen;
+* качество, если оно контролируется исходным player;
+* другие поддерживаемые команды.
+
+Для Host Activity Player также является визуальным представлением собственного удалённого/published media track, а не отдельным исходным плеером сайта.
+
+Таким образом Host и остальные участники смотрят один и тот же LiveKit media track.
+
+---
+
+## 10. Управление
+
+Activity имеет Control Plane.
+
+Команды:
+
+PLAY
+PAUSE
+SEEK
+SET_RATE
+SET_QUALITY
+NEXT
+PREVIOUS
+MUTE
+UNMUTE
+
+и другие команды, поддерживаемые конкретным адаптером сайта.
+
+Например пользователь B нажимает Pause.
+
+B
+→ Activity Server
+→ Host Extension
+→ выбранный HTMLMediaElement.pause()
+
+После этого источник перестаёт генерировать новые кадры, а LiveKit продолжает раздавать последний актуальный media state.
+
+---
+
+## 11. Перемотка
+
+Пользователь B нажимает:
+
+Seek → 01:24:35.
+
+Команда:
+
+SEEK(5075)
+
+передаётся Host Extension.
+
+Расширение выполняет:
+
+video.currentTime = 5075
+
+после чего:
+
+video.play()
+
+если Activity находится в состоянии PLAYING.
+
+Новые кадры автоматически появляются в захваченном MediaStream.
+
+Поток:
+
+video
+→ captureStream
+→ MediaStreamTrack
+→ LiveKit
+→ participants.
+
+---
+
+## 12. Управление качеством
+
+Если исходный сайт предоставляет API управления качеством, расширение должно использовать API конкретного сайта.
+
+Например:
+
+360p
+480p
+720p
+1080p
+
+Команда:
+
+SET_QUALITY(1080p)
+
+передаётся расширению.
+
+Расширение вызывает соответствующий API исходного player.
+
+Если сайт не предоставляет API качества, функция должна быть недоступна для этого источника.
+
+---
+
+## 13. Управление рекламой
+
+Расширение может предоставлять действия над рекламным состоянием только в рамках возможностей конкретного сайта/player.
+
+Например:
+
+* перейти к следующему разрешённому элементу;
+* закрыть собственный overlay;
+* нажать штатную кнопку Skip;
+* выполнить доступную через DOM/API команду.
+
+Нельзя предполагать универсальный механизм пропуска рекламы для любых сайтов.
+
+Для каждого поддерживаемого сайта рекомендуется использовать отдельный Site Adapter.
+
+---
+
+## 14. Site Adapter
+
+Архитектура расширения:
+
+Svyaz Extension
+├── Core
+│   ├── Activity Controller
+│   ├── Media Capture
+│   ├── LiveKit Publisher
+│   ├── Auth
+│   ├── Messaging
+│   └── Player Detection
+│
+└── Site Adapters
+├── Generic HTML5
+├── YouTube
+├── Site A
+├── Site B
+└── Site C
+
+Generic HTML5 adapter пытается найти HTMLMediaElement.
+
+Специализированный adapter знает DOM/API конкретного сайта и умеет:
+
+* найти настоящий player;
+* определить состояние;
+* play;
+* pause;
+* seek;
+* playback rate;
+* quality;
+* next;
+* previous;
+* mute;
+* fullscreen;
+* другие возможности.
+
+---
+
+## 15. Состояние Activity
+
+Activity Server хранит authoritative state:
+
+activityId
+hostUserId
+roomId
+sourceType
+sourceSite
+selectedPlayer
+playbackState
+position
+playbackRate
+quality
+controlMode
+sequence
+
+Пример:
+
+{
+"activityId": "activity-123",
+"hostUserId": "user-42",
+"state": "PLAYING",
+"position": 124.52,
+"playbackRate": 1.0,
+"quality": "1080p",
+"controlMode": "EVERYONE",
+"sequence": 481
+}
+
+---
+
+## 16. Режимы управления
+
+Создатель Activity выбирает:
+
+### Только я
+
+Только Host может:
+
+* play;
+* pause;
+* seek;
+* change quality;
+* change source.
+
+### Все участники
+
+Любой участник может отправлять команды.
+
+### Только модераторы
+
+Управлять могут:
+
+* Host;
+* пользователи с соответствующим permission.
+
+В будущем можно сделать granular permissions:
+
+PLAY
+PAUSE
+SEEK
+QUALITY
+SOURCE
+STOP_ACTIVITY
+
+---
+
+## 17. Передача управления
+
+Host может передать ownership:
+
+User A
+→ Transfer Activity
+→ User B
+
+После этого User B становится новым Media Host.
+
+Расширение User A освобождает source.
+
+Расширение User B подключает выбранный player и начинает публиковать новый media track.
+
+---
+
+## 18. Отказ Host
+
+Если Host закрыл браузер, вкладку или расширение потеряло источник:
+
+Activity Server получает:
+
+SOURCE_DISCONNECTED.
+
+Activity может:
+
+1. завершиться;
+2. предложить другому участнику стать Host;
+3. ожидать восстановления Host;
+4. автоматически передать ownership.
+
+---
+
+## 19. LiveKit
+
+LiveKit используется исключительно как media transport/SFU и realtime transport.
+
+Media:
+
+Host
+→ LiveKit
+→ participants.
+
+Control:
+
+Participant
+→ Activity Server / realtime channel
+→ Host Extension.
+
+LiveKit Data Packets можно использовать для low-latency control events, но authoritative state должен находиться на сервере.
+
+---
+
+## 20. Главная особенность архитектуры
+
+В системе существует только один настоящий источник видео:
+
+Host Browser → выбранный Player.
+
+Не происходит:
+
+Host → screen capture.
+
+Не происходит:
+
+Participant A → YouTube Player
+Participant B → YouTube Player
+Participant C → YouTube Player.
+
+Происходит:
+
+ONE PLAYER
+→ ONE MEDIA STREAM
+→ ONE WEBRTC PUBLICATION
+→ LIVEKIT SFU
+→ MANY PARTICIPANTS.
+
+Это обеспечивает одинаковое видео для всех участников и устраняет необходимость постоянно синхронизировать несколько независимых video decoders.
+
+---
+
+## 21. Ограничения
+
+Поддержка произвольного сайта не может гарантироваться только наличием расширения.
+
+Основной target — HTMLMediaElement, для которого доступен captureStream().
+
+Проблемные случаи:
+
+* DRM / EME;
+* защищённый контент;
+* нестандартные media pipelines;
+* несколько связанных player elements;
+* iframe;
+* cross-origin ограничения;
+* Media Source Extensions;
+* сайты, активно противодействующие automation;
+* браузеры, в которых captureStream() реализован неполностью.
+
+Поэтому система должна иметь capability detection:
+
+SUPPORTED
+PARTIALLY_SUPPORTED
+UNSUPPORTED
+
+до начала Activity.
+
+---
+
+## 22. UX
+
+В звонке:
+
+Совместная активность
+→ Совместный просмотр
+→ Сторонний сайт.
+
+Если extension отсутствует:
+
+«Установите Svyaz Extension».
+
+Если extension не авторизовано:
+
+«Авторизуйтесь в Svyaz Extension».
+
+Если авторизовано:
+
+«Расширение готово. Перейдите на страницу с видео и нажмите "Выбрать плеер".»
+
+После открытия сайта:
+
+«Выберите видеоплеер».
+
+Доступные players подсвечиваются.
+
+После выбора:
+
+«Плеер подключён к Svyaz».
+
+Исходный player визуально заменяется чёрным placeholder.
+
+Видео появляется в Activity.
+
+---
+
+## 23. Безопасность
+
+Расширение должно запрашивать минимально необходимые host permissions.
+
+Токены Svyaz не должны передаваться сторонним сайтам.
+
+Расширение должно взаимодействовать с Activity Server через TLS.
+
+Каждая Activity должна иметь уникальный ID и authorization context.
+
+Команды должны содержать sequence/request ID для защиты от повторного выполнения и гонок.
+
+Сервер должен проверять:
+
+* принадлежность пользователя к room;
+* наличие permission;
+* принадлежность Activity;
+* допустимость команды;
+* актуальность sequence.
+
+---
+
+## 24. Целевая архитектура
+
+Svyaz Web App
+│
+│ Activity API
+▼
+Activity Service
+│
+├── Activity State
+├── Permissions
+├── Commands
+└── Extension Sessions
+│
+▼
+Svyaz Browser Extension
+│
+├── Auth
+├── Player Detector
+├── Site Adapters
+├── Media Capture
+├── Player Controller
+└── LiveKit Publisher
+│
+▼
+External Website
+│
+└── HTMLMediaElement
+│
+▼
+MediaStreamTrack
+│
+▼
+LiveKit
+│
+┌─────┼─────┐
+▼     ▼     ▼
+A     B     C
+│     │     │
+└──── Activity UI ────┘
