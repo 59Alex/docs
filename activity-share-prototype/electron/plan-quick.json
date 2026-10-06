@@ -1,0 +1,3 @@
+{"cases":[
+ {"name":"clock-hidden-h264","url":"/clock.html","mode":"hidden","publish":true,"codec":"h264","viewers":3,"seconds":25,"warm":3000}
+]}

@@ -1,0 +1,5 @@
+{"cases":[
+ {"name":"hidden-aside","url":"/clock.html","mode":"hidden","publish":true,"codec":"h264","viewers":3,"seconds":20,"warm":3000,"viewerPos":"aside"},
+ {"name":"hidden-overlap","url":"/clock.html","mode":"hidden","publish":true,"codec":"h264","viewers":3,"seconds":20,"warm":3000},
+ {"name":"hidden-minimized","url":"/clock.html","mode":"hidden","publish":true,"codec":"h264","viewers":3,"seconds":20,"warm":3000,"viewerPos":"aside","minimize":true}
+]}

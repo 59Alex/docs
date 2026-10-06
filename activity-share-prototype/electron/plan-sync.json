@@ -1,0 +1,6 @@
+{"cases":[
+ {"name":"clock60-h264-D250","url":"/clock.html","mode":"hidden","publish":true,"codec":"h264","viewers":3,"seconds":25,"warm":3000,"viewerPos":"aside","stream":"activity","jbt":250},
+ {"name":"clock60-h264-minimized","url":"/clock.html","mode":"hidden","publish":true,"codec":"h264","viewers":3,"seconds":20,"warm":3000,"viewerPos":"aside","stream":"activity","minimize":true},
+ {"name":"hls-top","url":"/hls.html","mode":"hidden","publish":true,"codec":"h264","viewers":3,"seconds":30,"warm":9000,"viewerPos":"aside","stream":"activity"},
+ {"name":"youtube-embed","url":"/yt.html","mode":"hidden","publish":true,"codec":"h264","viewers":3,"seconds":20,"warm":12000,"viewerPos":"aside","stream":"activity"}
+]}

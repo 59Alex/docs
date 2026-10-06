@@ -1,0 +1,6 @@
+{"cases":[
+ {"name":"visible","url":"/clock.html","mode":"visible","publish":true,"codec":"h264","viewers":1,"seconds":12,"warm":3000,"viewerPos":"aside"},
+ {"name":"hidden-nov","url":"/clock.html","mode":"hidden","publish":true,"codec":"h264","viewers":0,"seconds":12,"warm":3000},
+ {"name":"covered-nov","url":"/clock.html","mode":"hidden-covered","publish":true,"codec":"h264","viewers":0,"seconds":12,"warm":3000},
+ {"name":"outside-nov","url":"/clock.html","mode":"hidden-outside","publish":true,"codec":"h264","viewers":0,"seconds":12,"warm":3000}
+]}

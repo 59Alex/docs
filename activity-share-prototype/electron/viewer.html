@@ -1,0 +1,31 @@
+<!doctype html><meta charset=utf-8><title>Окно «Активность» (зритель)</title>
+<style>body{margin:0;background:#000;color:#ccc;font:13px sans-serif}video{width:100%;display:block}#i{position:fixed;left:6px;top:4px;background:#0008;padding:2px 6px}</style>
+<video id=v autoplay playsinline muted></video><div id=i>зритель</div>
+<script src="/lk/livekit-client.umd.js"></script><script>
+const LK = LivekitClient; const v = document.getElementById("v"); const frames = []; const onsets = []; const stats = []; let room, vt, at, ac;
+const cv = document.createElement("canvas"); cv.width = 480; cv.height = 270; const cx = cv.getContext("2d", { willReadFrequently: true });
+function decode() { cx.drawImage(v, 0, 0, 480, 270); const d = cx.getImageData(0, 0, 480, 22).data; const W = 480;
+  const lum = (x, y) => { const o = (y * W + x) * 4; return (d[o] + d[o + 1] + d[o + 2]) / 3; };
+  let ms = 0; for (let i = 0; i < 44; i++) { const x = Math.round((i * 40 + 40) / 4); const a = lum(x, 5) > 128 ? 1 : 0, b = lum(x, 15) > 128 ? 1 : 0; if (a === b) return null; ms = ms * 2 + a; }
+  return ms; }
+function onFrame(now, meta) { const ts = decode(); if (ts) frames.push([ts, Math.round(performance.timeOrigin + meta.expectedDisplayTime), meta.width, meta.height]); v.requestVideoFrameCallback(onFrame); }
+window.startViewer = async (cfg) => {
+  const tok = await (await fetch(`/token?room=${cfg.room}&identity=${cfg.identity}&publish=0`)).text();
+  room = new LK.Room({ adaptiveStream: false });
+  const got = new Promise((res) => room.on(LK.RoomEvent.TrackSubscribed, async (track) => {
+    if (track.kind === "video") { vt = track; track.attach(v); v.requestVideoFrameCallback(onFrame); if (cfg.jbt != null && track.receiver) track.receiver.jitterBufferTarget = cfg.jbt; }
+    if (track.kind === "audio") { at = track; const el = track.attach(); el.muted = true; document.body.appendChild(el);
+      ac = new AudioContext(); await ac.audioWorklet.addModule("/viewer-audio-worklet.js"); const n = new AudioWorkletNode(ac, "onset");
+      ac.createMediaStreamSource(new MediaStream([track.mediaStreamTrack])).connect(n); const g = ac.createGain(); g.gain.value = 0; n.connect(g).connect(ac.destination);
+      n.port.onmessage = (e) => { const ts = ac.getOutputTimestamp(); onsets.push(Math.round(performance.timeOrigin + ts.performanceTime + (e.data - ts.contextTime) * 1000)); };
+      if (cfg.jbt != null && track.receiver) track.receiver.jitterBufferTarget = cfg.jbt; }
+    if (vt && at) res(); }));
+  const t0 = performance.now(); await room.connect(cfg.url, tok); await Promise.race([got, new Promise((r) => setTimeout(r, 15000))]);
+  return { subscribedMs: Math.round(performance.now() - t0), video: !!vt, audio: !!at };
+};
+window.viewerStats = async () => { const o = {}; if (vt && vt.receiver) (await vt.receiver.getStats()).forEach((r) => { if (r.type === "inbound-rtp") Object.assign(o, { fps: r.framesPerSecond, w: r.frameWidth, h: r.frameHeight, decoded: r.framesDecoded, dropped: r.framesDropped, lost: r.packetsLost, recv: r.packetsReceived, nack: r.nackCount, jb: r.jitterBufferEmittedCount ? Math.round(r.jitterBufferDelay / r.jitterBufferEmittedCount * 1000) : null, dec: r.decoderImplementation, bytes: r.bytesReceived }); if (r.type === "codec") o.codec = r.mimeType; });
+  if (at && at.receiver) (await at.receiver.getStats()).forEach((r) => { if (r.type === "inbound-rtp") Object.assign(o, { aLost: r.packetsLost, aConcealed: r.concealedSamples, aSamples: r.totalSamplesReceived, aJb: r.jitterBufferEmittedCount ? Math.round(r.jitterBufferDelay / r.jitterBufferEmittedCount * 1000) : null }); });
+  stats.push(o); return o; };
+window.collect = () => ({ frames, onsets, stats, outLat: ac && ac.outputLatency, baseLat: ac && ac.baseLatency });
+window.stopViewer = async () => { try { await room.disconnect(); } catch {} return true; };
+</script>

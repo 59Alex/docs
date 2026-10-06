@@ -1,0 +1,9 @@
+{"cases":[
+ {"name":"clock60-h264-hidden","url":"/clock.html","mode":"hidden","publish":true,"codec":"h264","viewers":3,"seconds":25,"warm":3000,"viewerPos":"aside"},
+ {"name":"clock60-h264-hidden-overlap","url":"/clock.html","mode":"hidden","publish":true,"codec":"h264","viewers":3,"seconds":25,"warm":3000},
+ {"name":"clock60-h264-minimized","url":"/clock.html","mode":"hidden","publish":true,"codec":"h264","viewers":3,"seconds":25,"warm":3000,"viewerPos":"aside","minimize":true},
+ {"name":"clock60-vp8","url":"/clock.html","mode":"hidden","publish":true,"codec":"vp8","viewers":3,"seconds":25,"warm":3000,"viewerPos":"aside"},
+ {"name":"clock60-vp9svc","url":"/clock.html","mode":"hidden","publish":true,"codec":"vp9","svc":"L3T3_KEY","simulcast":false,"viewers":3,"seconds":25,"warm":3000,"viewerPos":"aside"},
+ {"name":"clock60-av1svc","url":"/clock.html","mode":"hidden","publish":true,"codec":"av1","svc":"L3T3_KEY","simulcast":false,"viewers":3,"seconds":25,"warm":3000,"viewerPos":"aside"},
+ {"name":"clock30-h264","url":"/clock.html","mode":"hidden","fps":30,"maxBitrate":6000000,"publish":true,"codec":"h264","viewers":3,"seconds":25,"warm":3000,"viewerPos":"aside"}
+]}

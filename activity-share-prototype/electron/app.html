@@ -1,0 +1,54 @@
+<!doctype html><meta charset=utf-8><title>Connect Активность</title>
+<style>body{margin:0;background:#0f1115;color:#e8e8e8;font:14px system-ui,sans-serif}header{display:flex;gap:12px;align-items:center;padding:10px 14px;background:#171a21}
+button{background:#2a6df4;color:#fff;border:0;border-radius:6px;padding:6px 12px}#snap{position:relative;margin:10px 14px;display:none}#snap img{width:640px;display:block}
+#black{position:absolute;background:#000;color:#bbb;display:flex;align-items:center;justify-content:center;font-size:13px}#st{opacity:.8}</style>
+<header><b>Connect Активность</b><button>Выбрать плеер</button><button>Вернуть плеер</button><span id=st>ожидание</span></header>
+<div id=snap><img id=img><div id=black>Транслируется в Connect</div></div>
+<script src="/lk/livekit-client.umd.js"></script><script>
+const LK = LivekitClient; let room, vtrack, atrack;
+const st = (t) => document.getElementById("st").textContent = t;
+window.showEaten = (dataUrl, rect, scale) => { const s = document.getElementById("snap"); s.style.display = "block"; document.getElementById("img").src = dataUrl;
+  const b = document.getElementById("black"); Object.assign(b.style, { left: rect.x * scale + "px", top: rect.y * scale + "px", width: rect.w * scale + "px", height: rect.h * scale + "px" }); };
+// Замер на клоне трека: незакрытые кадры MediaStreamTrackProcessor держат буферы захвата и душат источник.
+async function measure(orig, ms) { const track = orig.clone(); const r = new MediaStreamTrackProcessor({ track }).readable.getReader(); let n = 0, w = 0, h = 0; const t0 = performance.now();
+  while (performance.now() - t0 < ms) { const { value, done } = await r.read(); if (done) break; n++; w = value.displayWidth; h = value.displayHeight; value.close(); }
+  const fps = +(n * 1000 / (performance.now() - t0)).toFixed(1); await r.cancel().catch(() => {}); track.stop(); return { fps, w, h }; }
+window.measureLocal = (ms) => measure(vtrack, ms || 3000);
+async function audioRms(track, ms) { const ac = new AudioContext(); const src = ac.createMediaStreamSource(new MediaStream([track])); const an = ac.createAnalyser(); src.connect(an);
+  const buf = new Float32Array(2048); let mx = 0; const t0 = performance.now(); while (performance.now() - t0 < ms) { an.getFloatTimeDomainData(buf); let s = 0; for (const v of buf) s += v * v; mx = Math.max(mx, Math.sqrt(s / buf.length)); await new Promise((r) => setTimeout(r, 20)); }
+  ac.close(); return +mx.toFixed(4); }
+window.capture = async (cfg) => {
+  st("захват вида сайта…");
+  const t0 = performance.now();
+  // Звук фильма — без эхоподавления, шумодава и АРУ (по умолчанию Chromium включает их и даёт моно).
+  const s = await navigator.mediaDevices.getDisplayMedia({ video: { frameRate: cfg.fps || 60, width: cfg.w || 1920, height: cfg.h || 1080 },
+    audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false, channelCount: 2, sampleRate: 48000 } });
+  const tFirst = Math.round(performance.now() - t0);
+  vtrack = s.getVideoTracks()[0]; atrack = s.getAudioTracks()[0]; vtrack.contentHint = "motion";
+  const m = await measure(vtrack, 4000); const rms = atrack ? await audioRms(atrack, 2500) : null;
+  return { getDisplayMediaMs: tFirst, settings: vtrack.getSettings(), local: m, audio: !!atrack, audioSettings: atrack && atrack.getSettings(), audioRms: rms };
+};
+window.publish = async (cfg) => {
+  st("публикация в звонок…");
+  const tok = await (await fetch(`/token?room=${cfg.room}&identity=${encodeURIComponent(cfg.identity)}&publish=1`)).text();
+  room = new LK.Room({ adaptiveStream: false, dynacast: true });
+  await room.connect(cfg.url, tok);
+  const enc = { maxBitrate: cfg.maxBitrate || 8000000, maxFramerate: cfg.fps || 60, priority: "high" };
+  // screenShareEncoding обязателен: без него LiveKit для источника ScreenShare берёт h1080fps15 (2,5 Мбит/с, 15 к/с).
+  const opts = { source: LK.Track.Source.ScreenShare, videoCodec: cfg.codec || "h264", simulcast: cfg.simulcast !== false, videoEncoding: enc, screenShareEncoding: enc,
+    degradationPreference: "maintain-framerate", backupCodec: false };
+  if (cfg.codec === "vp9" || cfg.codec === "av1") opts.scalabilityMode = cfg.svc || "L3T3_KEY";
+  if (cfg.simulcast !== false && !opts.scalabilityMode) opts.screenShareSimulcastLayers = [new LK.VideoPreset(960, 540, 2000000, cfg.fps || 60), new LK.VideoPreset(640, 360, 800000, 30)];
+  const lv = new LK.LocalVideoTrack(vtrack, undefined, false);
+  if (cfg.stream) opts.stream = cfg.stream; /* один stream у видео и звука — синхронизация губ в WebRTC */
+  await room.localParticipant.publishTrack(lv, opts);
+  if (atrack) { const la = new LK.LocalAudioTrack(atrack, undefined, false);
+    await room.localParticipant.publishTrack(la, { source: LK.Track.Source.ScreenShareAudio, dtx: false, red: true, forceStereo: true, audioPreset: { maxBitrate: 160000 }, ...(cfg.stream ? { stream: cfg.stream } : {}) }); }
+  st("в эфире");
+  window.__lv = lv; window.__la = room.localParticipant; return true;
+};
+window.senderStats = async () => { const out = [];
+  const rep = await window.__lv.sender.getStats(); rep.forEach((r) => { if (r.type === "outbound-rtp") out.push({ rid: r.rid, w: r.frameWidth, h: r.frameHeight, fps: r.framesPerSecond, bytes: r.bytesSent, ts: r.timestamp, enc: r.encoderImplementation, ql: r.qualityLimitationReason, codecId: r.codecId, active: r.active, pwrEff: r.powerEfficientEncoder, encMs: r.framesEncoded ? +(r.totalEncodeTime / r.framesEncoded * 1000).toFixed(1) : null });
+    if (r.type === "codec") out.push({ codec: r.mimeType, id: r.id }); }); return out; };
+window.stop = async () => { try { await room.disconnect(); } catch {} vtrack && vtrack.stop(); atrack && atrack.stop(); st("остановлено"); return true; };
+</script>

@@ -1,0 +1,9 @@
+{"cases":[
+ {"name":"clock60-h264-stream","url":"/clock.html","mode":"hidden","publish":true,"codec":"h264","viewers":3,"seconds":25,"warm":3000,"viewerPos":"aside","stream":"activity"},
+ {"name":"clock30src-h264","url":"/clock.html?fps=30","mode":"hidden","fps":30,"maxBitrate":6000000,"publish":true,"codec":"h264","viewers":3,"seconds":25,"warm":3000,"viewerPos":"aside","stream":"activity"},
+ {"name":"hls-top","url":"/hls.html","mode":"hidden","publish":true,"codec":"h264","viewers":3,"seconds":20,"warm":9000,"viewerPos":"aside","stream":"activity"},
+ {"name":"hls-iframe-xorigin","url":"/iframe-hls.html","mode":"hidden","publish":true,"codec":"h264","viewers":3,"seconds":20,"warm":9000,"viewerPos":"aside","stream":"activity"},
+ {"name":"mp4-nocors","url":"/nocors.html","mode":"hidden","publish":true,"codec":"h264","viewers":3,"seconds":20,"warm":6000,"viewerPos":"aside","stream":"activity"},
+ {"name":"mp4-nocors-websec-off","url":"/nocors.html","mode":"hidden","publish":false,"webSecurity":false,"warm":6000},
+ {"name":"youtube-embed","url":"/yt.html","mode":"hidden","publish":true,"codec":"h264","viewers":3,"seconds":20,"warm":12000,"viewerPos":"aside","stream":"activity"}
+]}

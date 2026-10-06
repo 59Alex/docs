@@ -1,0 +1,1 @@
+{"name":"connect-activity-prototype","private":true,"main":"main.js","dependencies":{"electron":"44.5.1","livekit-client":"2.22.3","livekit-server-sdk":"2.19.1"}}
