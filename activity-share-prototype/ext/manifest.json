@@ -1,0 +1,36 @@
+{
+ "manifest_version": 3,
+ "name": "Connect activity probe (T133 prototype)",
+ "version": "0.0.1",
+ "background": {
+  "service_worker": "sw.js"
+ },
+ "content_scripts": [
+  {
+   "matches": [
+    "<all_urls>"
+   ],
+   "js": [
+    "probe-lib.js"
+   ],
+   "all_frames": true,
+   "match_about_blank": true,
+   "run_at": "document_start"
+  }
+ ],
+ "externally_connectable": {
+  "matches": [
+   "http://localhost/*"
+  ]
+ },
+ "permissions": [
+  "tabCapture",
+  "scripting",
+  "activeTab",
+  "tabs",
+  "webNavigation"
+ ],
+ "host_permissions": [
+  "<all_urls>"
+ ]
+}

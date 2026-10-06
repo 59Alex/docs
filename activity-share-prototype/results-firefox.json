@@ -1,0 +1,485 @@
+{
+ "hls": {
+  "name": "hls",
+  "probe": {
+   "info": {
+    "inShadow": false,
+    "diag": null,
+    "adShowing": false,
+    "href": "https://hlsjs.video-dev.org/demo/?src=https%3A%2F%2Ftest-streams.mux.dev%2Fx36xhzz%2Fx36xhzz.m3u8",
+    "playing": true,
+    "src": "blob:https://hlsjs.video-dev.org/109cb6ca-a854-4ac0-b063-7d0b5ffc0a3b",
+    "srcKind": "MSE/blob",
+    "crossOriginAttr": null,
+    "mediaKeys": false,
+    "size": [
+     1280,
+     720
+    ],
+    "hasCapture": true,
+    "hasMoz": true,
+    "tracks": [
+     "video:live:live",
+     "audio:live:live"
+    ],
+    "tracksAfter": [
+     "video:live:live",
+     "audio:live:live"
+    ]
+   },
+   "res": [
+    {
+     "label": "visible",
+     "vis": "visible",
+     "playing": true,
+     "advanced": 2.05,
+     "muted": false,
+     "volume": 1,
+     "video": {
+      "via": "rVFC",
+      "fps": 50,
+      "w": 1280,
+      "h": 720,
+      "luma": 222,
+      "trackMuted": false,
+      "ready": "live"
+     },
+     "audio": {
+      "rmsDb": -42.8,
+      "ctx": "running",
+      "trackMuted": false
+     }
+    },
+    {
+     "label": "hide:opacity0",
+     "vis": "visible",
+     "playing": true,
+     "advanced": 2.05,
+     "muted": false,
+     "volume": 1,
+     "video": {
+      "via": "rVFC",
+      "fps": 51.5,
+      "w": 1280,
+      "h": 720,
+      "luma": 218,
+      "trackMuted": false,
+      "ready": "live"
+     },
+     "audio": {
+      "rmsDb": -47,
+      "ctx": "running",
+      "trackMuted": false
+     }
+    },
+    {
+     "label": "hide:overlay",
+     "vis": "visible",
+     "playing": true,
+     "advanced": 2.06,
+     "muted": false,
+     "volume": 1,
+     "video": {
+      "via": "rVFC",
+      "fps": 49.5,
+      "w": 1920,
+      "h": 1080,
+      "luma": 183,
+      "trackMuted": false,
+      "ready": "live"
+     },
+     "audio": {
+      "rmsDb": -47.7,
+      "ctx": "running",
+      "trackMuted": false
+     }
+    },
+    {
+     "label": "hide:visibility",
+     "vis": "visible",
+     "playing": true,
+     "advanced": 2.07,
+     "muted": false,
+     "volume": 1,
+     "video": {
+      "via": "rVFC",
+      "fps": 50.5,
+      "w": 1920,
+      "h": 1080,
+      "luma": 162,
+      "trackMuted": false,
+      "ready": "live"
+     },
+     "audio": {
+      "rmsDb": -45.5,
+      "ctx": "running",
+      "trackMuted": false
+     }
+    },
+    {
+     "label": "hide:offscreen",
+     "vis": "visible",
+     "playing": true,
+     "advanced": 2.05,
+     "muted": false,
+     "volume": 1,
+     "video": {
+      "via": "rVFC",
+      "fps": 51,
+      "w": 1920,
+      "h": 1080,
+      "luma": 160,
+      "trackMuted": false,
+      "ready": "live"
+     },
+     "audio": {
+      "rmsDb": -29,
+      "ctx": "running",
+      "trackMuted": false
+     }
+    },
+    {
+     "label": "hide:display-none",
+     "vis": "visible",
+     "playing": true,
+     "advanced": 2.06,
+     "muted": false,
+     "volume": 1,
+     "video": {
+      "via": "rVFC",
+      "fps": 49.5,
+      "w": 1920,
+      "h": 1080,
+      "luma": 119,
+      "trackMuted": false,
+      "ready": "live"
+     },
+     "audio": {
+      "rmsDb": -28.7,
+      "ctx": "running",
+      "trackMuted": false
+     }
+    },
+    {
+     "label": "eaten+muted",
+     "vis": "visible",
+     "playing": true,
+     "advanced": 2.04,
+     "muted": true,
+     "volume": 1,
+     "video": {
+      "via": "rVFC",
+      "fps": 49,
+      "w": 1920,
+      "h": 1080,
+      "luma": 159,
+      "trackMuted": false,
+      "ready": "live"
+     },
+     "audio": {
+      "rmsDb": -27.7,
+      "ctx": "running",
+      "trackMuted": false
+     }
+    },
+    {
+     "label": "eaten+volume0",
+     "vis": "visible",
+     "playing": true,
+     "advanced": 2.04,
+     "muted": false,
+     "volume": 0,
+     "video": {
+      "via": "rVFC",
+      "fps": 49,
+      "w": 1920,
+      "h": 1080,
+      "luma": 161,
+      "trackMuted": false,
+      "ready": "live"
+     },
+     "audio": {
+      "rmsDb": -29.4,
+      "ctx": "running",
+      "trackMuted": false
+     }
+    }
+   ]
+  },
+  "bg": {
+   "label": "background(eaten+muted)",
+   "vis": "visible",
+   "playing": true,
+   "advanced": 3.05,
+   "muted": true,
+   "volume": 1,
+   "video": {
+    "via": "rVFC",
+    "fps": 50.7,
+    "w": 1920,
+    "h": 1080,
+    "luma": 82,
+    "trackMuted": false,
+    "ready": "live"
+   },
+   "audio": {
+    "rmsDb": -45.2,
+    "ctx": "running",
+    "trackMuted": false
+   }
+  },
+  "loopRecv": {
+   "luma": 0,
+   "vis": "visible"
+  },
+  "loopSend": {
+   "fps": 0,
+   "w": 0,
+   "h": 0,
+   "codec": "f4c464db",
+   "bytes": 0
+  }
+ },
+ "hls-iframe": {
+  "name": "hls-iframe",
+  "frameUrl": "https://hlsjs.video-dev.org/demo/?src=https%3A%2F%2Ftest-streams.mux.dev%2Fx36xhzz%2Fx36xhzz.m3u8",
+  "probe": {
+   "info": {
+    "inShadow": false,
+    "diag": null,
+    "adShowing": false,
+    "href": "https://hlsjs.video-dev.org/demo/?src=https%3A%2F%2Ftest-streams.mux.dev%2Fx36xhzz%2Fx36xhzz.m3u8",
+    "playing": true,
+    "src": "blob:https://hlsjs.video-dev.org/0405a6db-67f8-4ace-a043-bb7fb4ea94aa",
+    "srcKind": "MSE/blob",
+    "crossOriginAttr": null,
+    "mediaKeys": false,
+    "size": [
+     1280,
+     720
+    ],
+    "hasCapture": true,
+    "hasMoz": true,
+    "tracks": [
+     "video:live:live",
+     "audio:live:live"
+    ],
+    "tracksAfter": [
+     "video:live:live",
+     "audio:live:live"
+    ]
+   },
+   "res": [
+    {
+     "label": "visible",
+     "vis": "visible",
+     "playing": true,
+     "advanced": 2.02,
+     "muted": false,
+     "volume": 1,
+     "video": {
+      "via": "rVFC",
+      "fps": 45.5,
+      "w": 1280,
+      "h": 720,
+      "luma": 221,
+      "trackMuted": false,
+      "ready": "live"
+     },
+     "audio": {
+      "rmsDb": -43.1,
+      "ctx": "running",
+      "trackMuted": false
+     }
+    },
+    {
+     "label": "hide:opacity0",
+     "vis": "visible",
+     "playing": true,
+     "advanced": 2.01,
+     "muted": false,
+     "volume": 1,
+     "video": {
+      "via": "rVFC",
+      "fps": 47,
+      "w": 1280,
+      "h": 720,
+      "luma": 217,
+      "trackMuted": false,
+      "ready": "live"
+     },
+     "audio": {
+      "rmsDb": -47.6,
+      "ctx": "running",
+      "trackMuted": false
+     }
+    },
+    {
+     "label": "hide:overlay",
+     "vis": "visible",
+     "playing": true,
+     "advanced": 2.04,
+     "muted": false,
+     "volume": 1,
+     "video": {
+      "via": "rVFC",
+      "fps": 46,
+      "w": 1920,
+      "h": 1080,
+      "luma": 180,
+      "trackMuted": false,
+      "ready": "live"
+     },
+     "audio": {
+      "rmsDb": -49.2,
+      "ctx": "running",
+      "trackMuted": false
+     }
+    },
+    {
+     "label": "hide:visibility",
+     "vis": "visible",
+     "playing": true,
+     "advanced": 2.01,
+     "muted": false,
+     "volume": 1,
+     "video": {
+      "via": "rVFC",
+      "fps": 49.5,
+      "w": 1920,
+      "h": 1080,
+      "luma": 162,
+      "trackMuted": false,
+      "ready": "live"
+     },
+     "audio": {
+      "rmsDb": -43.2,
+      "ctx": "running",
+      "trackMuted": false
+     }
+    },
+    {
+     "label": "hide:offscreen",
+     "vis": "visible",
+     "playing": true,
+     "advanced": 2.03,
+     "muted": false,
+     "volume": 1,
+     "video": {
+      "via": "rVFC",
+      "fps": 49.5,
+      "w": 1920,
+      "h": 1080,
+      "luma": 161,
+      "trackMuted": false,
+      "ready": "live"
+     },
+     "audio": {
+      "rmsDb": -28.5,
+      "ctx": "running",
+      "trackMuted": false
+     }
+    },
+    {
+     "label": "hide:display-none",
+     "vis": "visible",
+     "playing": true,
+     "advanced": 1.99,
+     "muted": false,
+     "volume": 1,
+     "video": {
+      "via": "rVFC",
+      "fps": 47,
+      "w": 1920,
+      "h": 1080,
+      "luma": 120,
+      "trackMuted": false,
+      "ready": "live"
+     },
+     "audio": {
+      "rmsDb": -28,
+      "ctx": "running",
+      "trackMuted": false
+     }
+    },
+    {
+     "label": "eaten+muted",
+     "vis": "visible",
+     "playing": true,
+     "advanced": 2.03,
+     "muted": true,
+     "volume": 1,
+     "video": {
+      "via": "rVFC",
+      "fps": 49.5,
+      "w": 1920,
+      "h": 1080,
+      "luma": 159,
+      "trackMuted": false,
+      "ready": "live"
+     },
+     "audio": {
+      "rmsDb": -28.5,
+      "ctx": "running",
+      "trackMuted": false
+     }
+    },
+    {
+     "label": "eaten+volume0",
+     "vis": "visible",
+     "playing": true,
+     "advanced": 1.99,
+     "muted": false,
+     "volume": 0,
+     "video": {
+      "via": "rVFC",
+      "fps": 48,
+      "w": 1920,
+      "h": 1080,
+      "luma": 161,
+      "trackMuted": false,
+      "ready": "live"
+     },
+     "audio": {
+      "rmsDb": -28.8,
+      "ctx": "running",
+      "trackMuted": false
+     }
+    }
+   ]
+  },
+  "bg": {
+   "label": "background(eaten+muted)",
+   "vis": "visible",
+   "playing": true,
+   "advanced": 3.02,
+   "muted": true,
+   "volume": 1,
+   "video": {
+    "via": "rVFC",
+    "fps": 47.7,
+    "w": 1920,
+    "h": 1080,
+    "luma": 82,
+    "trackMuted": false,
+    "ready": "live"
+   },
+   "audio": {
+    "rmsDb": -44.9,
+    "ctx": "running",
+    "trackMuted": false
+   }
+  },
+  "loopRecv": {
+   "luma": 0,
+   "vis": "visible"
+  },
+  "loopSend": {
+   "fps": 0,
+   "w": 0,
+   "h": 0,
+   "codec": "30e9fd3a",
+   "bytes": 0
+  }
+ }
+}

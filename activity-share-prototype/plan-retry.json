@@ -1,0 +1,5 @@
+{"sites":[
+ {"name":"youtube","url":"https://www.youtube.com/watch?v=aqz-KE-bpKQ"},
+ {"name":"vk","url":"https://vkvideo.ru/video-211232966_456241512"},
+ {"name":"rutube-embed","url":"http://localhost:8099/iframe-rt.html?id=b6f3e1cecffbbeb343aed961a97ffcd9","frame":"rutube\\.ru/play/embed"}
+]}

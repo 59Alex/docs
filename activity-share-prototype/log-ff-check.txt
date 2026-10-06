@@ -1,0 +1,9 @@
+listening 8099/8100
+FF nocors: {"playing":true,"t":5.977109,"tracks":["video:live:live"],"getImageData":"SecurityError","sinkSize":[1280,720]}
+offer candidates: [
+  'a=candidate:0 1 UDP 2122252543 192.168.1.66 39080 typ host',
+  'a=candidate:1 1 TCP 2105524479 192.168.1.66 9 typ host tcptype active',
+  'a=candidate:0 2 UDP 2122252542 192.168.1.66 52288 typ host'
+]
+FF loopback recv: {"fps":60,"w":960,"h":540,"decoded":1196,"kbps":null,"jbMs":20,"codec":"b3bc4da9","audioLevel":0.010376293221839045,"audioEnergy":0.13347924706754918,"luma":172,"vis":"visible"}
+FF loopback send: {"fps":59,"w":960,"h":540,"bytes":5963775,"enc":1198,"ice":"connected"}

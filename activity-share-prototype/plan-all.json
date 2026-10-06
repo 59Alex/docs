@@ -1,0 +1,10 @@
+{"sites":[
+ {"name":"youtube","url":"https://www.youtube.com/watch?v=aqz-KE-bpKQ"},
+ {"name":"youtube-embed","url":"http://localhost:8099/iframe-yt.html","frame":"youtube\\.com/embed"},
+ {"name":"rutube","url":"https://rutube.ru/","link":"rutube\\.ru/video/[0-9a-f]{32}"},
+ {"name":"rutube-embed","url":"http://localhost:8099/iframe-rt.html?id={rtid}","frame":"rutube\\.ru/play/embed"},
+ {"name":"vk","url":"https://vkvideo.ru/","link":"vkvideo\\.ru/video-?\\d+_\\d+"},
+ {"name":"twitch","url":"https://www.twitch.tv/"},
+ {"name":"hls-iframe","url":"http://localhost:8099/iframe-hls.html","frame":"hlsjs\\.video-dev\\.org"},
+ {"name":"nocors","url":"http://localhost:8099/nocors.html"}
+]}

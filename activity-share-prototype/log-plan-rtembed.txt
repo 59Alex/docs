@@ -1,0 +1,6 @@
+listening 8099/8100
+10:32:49 rutube-embed start "http://localhost:8099/iframe-rt.html?id=b6f3e1cecffbbeb343aed961a97ffcd9"
+10:32:56 rutube-embed frame "https://rutube.ru/play/embed/b6f3e1cecffbbeb343aed961a97ffcd9?autoplay=1"
+10:32:56 rutube-embed tab "http://localhost:8099/iframe-rt.html?id=b6f3e1cecffbbeb343aed961a97ffcd9"
+10:33:16 rutube-embed probe {"error":"no <video>","diag":{"title":"RUTUBE Плеер","text":"Видео недоступно по решению правообладателя или у вас включён VPN Что ещё посмотреть?","videos":0,"deepVideos":0,"shadowRoots":0},"frames":0,"iframes":[]}
+10:33:16 ALL DONE {}

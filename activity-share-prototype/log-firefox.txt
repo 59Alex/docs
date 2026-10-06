@@ -1,0 +1,27 @@
+listening 8099/8100
+10:28:36 == hls https://hlsjs.video-dev.org/demo/?src=https%3A%2F%2Ftest-streams.mux.dev%2Fx36xhzz%2Fx36xhzz.m3u8
+10:29:02 hls {"inShadow":false,"diag":null,"adShowing":false,"href":"https://hlsjs.video-dev.org/demo/?src=https%3A%2F%2Ftest-streams.mux.dev%2Fx36xhzz%2Fx36xhzz.m3u8","playing":true,"src":"blob:https://hlsjs.video-dev.org/109cb6ca-a854-4ac0-b063-7d0b5ffc0a3b","srcKind":"MSE/blob","crossOriginAttr":null,"mediaKeys":false,"size":[1280,720],"hasCapture":true,"hasMoz":true,"tracks":["video:live:live","audio:live:live"],"tracksAfter":["video:live:live","audio:live:live"]}
+10:29:02    visible visible play true adv 2.05 V {"via":"rVFC","fps":50,"w":1280,"h":720,"luma":222,"trackMuted":false,"ready":"live"} A {"rmsDb":-42.8,"ctx":"running","trackMuted":false}
+10:29:02    hide:opacity0 visible play true adv 2.05 V {"via":"rVFC","fps":51.5,"w":1280,"h":720,"luma":218,"trackMuted":false,"ready":"live"} A {"rmsDb":-47,"ctx":"running","trackMuted":false}
+10:29:02    hide:overlay visible play true adv 2.06 V {"via":"rVFC","fps":49.5,"w":1920,"h":1080,"luma":183,"trackMuted":false,"ready":"live"} A {"rmsDb":-47.7,"ctx":"running","trackMuted":false}
+10:29:02    hide:visibility visible play true adv 2.07 V {"via":"rVFC","fps":50.5,"w":1920,"h":1080,"luma":162,"trackMuted":false,"ready":"live"} A {"rmsDb":-45.5,"ctx":"running","trackMuted":false}
+10:29:02    hide:offscreen visible play true adv 2.05 V {"via":"rVFC","fps":51,"w":1920,"h":1080,"luma":160,"trackMuted":false,"ready":"live"} A {"rmsDb":-29,"ctx":"running","trackMuted":false}
+10:29:02    hide:display-none visible play true adv 2.06 V {"via":"rVFC","fps":49.5,"w":1920,"h":1080,"luma":119,"trackMuted":false,"ready":"live"} A {"rmsDb":-28.7,"ctx":"running","trackMuted":false}
+10:29:02    eaten+muted visible play true adv 2.04 V {"via":"rVFC","fps":49,"w":1920,"h":1080,"luma":159,"trackMuted":false,"ready":"live"} A {"rmsDb":-27.7,"ctx":"running","trackMuted":false}
+10:29:02    eaten+volume0 visible play true adv 2.04 V {"via":"rVFC","fps":49,"w":1920,"h":1080,"luma":161,"trackMuted":false,"ready":"live"} A {"rmsDb":-29.4,"ctx":"running","trackMuted":false}
+10:29:02    site tab visibility after Connect tab opened: visible B: visible
+10:29:09    background(eaten+muted) visible play true adv 3.05 V {"via":"rVFC","fps":50.7,"w":1920,"h":1080,"luma":82,"trackMuted":false,"ready":"live"} A {"rmsDb":-45.2,"ctx":"running","trackMuted":false}
+10:29:29    loopback recv {"luma":0,"vis":"visible"} send {"fps":0,"w":0,"h":0,"codec":"f4c464db","bytes":0}
+10:29:29 == hls-iframe http://localhost:8099/iframe-hls.html
+10:29:54 hls-iframe {"inShadow":false,"diag":null,"adShowing":false,"href":"https://hlsjs.video-dev.org/demo/?src=https%3A%2F%2Ftest-streams.mux.dev%2Fx36xhzz%2Fx36xhzz.m3u8","playing":true,"src":"blob:https://hlsjs.video-dev.org/0405a6db-67f8-4ace-a043-bb7fb4ea94aa","srcKind":"MSE/blob","crossOriginAttr":null,"mediaKeys":false,"size":[1280,720],"hasCapture":true,"hasMoz":true,"tracks":["video:live:live","audio:live:live"],"tracksAfter":["video:live:live","audio:live:live"]}
+10:29:54    visible visible play true adv 2.02 V {"via":"rVFC","fps":45.5,"w":1280,"h":720,"luma":221,"trackMuted":false,"ready":"live"} A {"rmsDb":-43.1,"ctx":"running","trackMuted":false}
+10:29:54    hide:opacity0 visible play true adv 2.01 V {"via":"rVFC","fps":47,"w":1280,"h":720,"luma":217,"trackMuted":false,"ready":"live"} A {"rmsDb":-47.6,"ctx":"running","trackMuted":false}
+10:29:54    hide:overlay visible play true adv 2.04 V {"via":"rVFC","fps":46,"w":1920,"h":1080,"luma":180,"trackMuted":false,"ready":"live"} A {"rmsDb":-49.2,"ctx":"running","trackMuted":false}
+10:29:54    hide:visibility visible play true adv 2.01 V {"via":"rVFC","fps":49.5,"w":1920,"h":1080,"luma":162,"trackMuted":false,"ready":"live"} A {"rmsDb":-43.2,"ctx":"running","trackMuted":false}
+10:29:54    hide:offscreen visible play true adv 2.03 V {"via":"rVFC","fps":49.5,"w":1920,"h":1080,"luma":161,"trackMuted":false,"ready":"live"} A {"rmsDb":-28.5,"ctx":"running","trackMuted":false}
+10:29:54    hide:display-none visible play true adv 1.99 V {"via":"rVFC","fps":47,"w":1920,"h":1080,"luma":120,"trackMuted":false,"ready":"live"} A {"rmsDb":-28,"ctx":"running","trackMuted":false}
+10:29:54    eaten+muted visible play true adv 2.03 V {"via":"rVFC","fps":49.5,"w":1920,"h":1080,"luma":159,"trackMuted":false,"ready":"live"} A {"rmsDb":-28.5,"ctx":"running","trackMuted":false}
+10:29:54    eaten+volume0 visible play true adv 1.99 V {"via":"rVFC","fps":48,"w":1920,"h":1080,"luma":161,"trackMuted":false,"ready":"live"} A {"rmsDb":-28.8,"ctx":"running","trackMuted":false}
+10:29:54    site tab visibility after Connect tab opened: visible B: visible
+10:30:01    background(eaten+muted) visible play true adv 3.02 V {"via":"rVFC","fps":47.7,"w":1920,"h":1080,"luma":82,"trackMuted":false,"ready":"live"} A {"rmsDb":-44.9,"ctx":"running","trackMuted":false}
+10:30:21    loopback recv {"luma":0,"vis":"visible"} send {"fps":0,"w":0,"h":0,"codec":"30e9fd3a","bytes":0}
