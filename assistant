@@ -1,0 +1,922 @@
+# Realtime Multimodal AI Pipeline
+
+## 1. Цель
+
+Однопользовательский realtime AI-копилот с минимальной задержкой, который одновременно:
+
+* захватывает микрофон;
+* распознаёт речь в реальном времени;
+* разделяет голоса собеседников;
+* определяет эмоции по голосу;
+* захватывает изображение с веб-камеры;
+* определяет наличие и состояние лица;
+* определяет вероятную эмоцию лица;
+* захватывает экран;
+* анализирует только изменившиеся/значимые области экрана;
+* поддерживает контекст разговора;
+* использует LLM + Skills для формирования ответа;
+* начинает генерировать ответ ещё до полного завершения реплики;
+* передаёт ответ в streaming TTS;
+* синтезирует речь с интонацией, паузами и логическим ударением;
+* мгновенно прекращает TTS при перебивании пользователем.
+
+Главный принцип:
+
+> Все критичные realtime-модели постоянно находятся в памяти GPU. Никакой загрузки/выгрузки моделей между запросами.
+
+---
+
+# 2. Сервер
+
+## Production-конфигурация
+
+* GPU: NVIDIA RTX 6000 Pro 96 GB
+* CPU: 32 vCPU
+* RAM: 128 GB
+* Storage: 1 TB NVMe
+* Network: 1–10 Gbit/s
+* OS: Ubuntu 24.04 LTS
+* CUDA + NVIDIA Container Toolkit
+* Docker
+
+## Почему
+
+RTX 6000 Pro 96 GB позволяет одновременно держать:
+
+* ASR;
+* speaker diarization;
+* voice emotion;
+* face detection/tracking;
+* face emotion;
+* vision model;
+* LLM;
+* TTS;
+* KV-cache;
+* промежуточные буферы.
+
+32 vCPU используются для параллельного preprocessing, декодирования аудио/видео, orchestration, network I/O и других CPU-задач.
+
+128 GB RAM обеспечивает запас для model servers, буферов, cache и нескольких параллельных worker-процессов.
+
+---
+
+# 3. Общая архитектура
+
+```text
+                    DESKTOP APPLICATION
+                           │
+             ┌─────────────┼─────────────┐
+             │             │             │
+             ▼             ▼             ▼
+         MICROPHONE     CAMERA         SCREEN
+             │             │             │
+             └─────────────┼─────────────┘
+                           │
+                    LOW-LATENCY STREAM
+                     WebSocket / QUIC
+                           │
+                           ▼
+              ┌────────────────────────┐
+              │   REALTIME INGESTION   │
+              └────────────┬───────────┘
+                           │
+          ┌────────────────┼────────────────┐
+          │                │                │
+          ▼                ▼                ▼
+    AUDIO PIPELINE    VIDEO PIPELINE   SCREEN PIPELINE
+          │                │                │
+          ▼                ▼                ▼
+        VAD          Face Detection    Change Detection
+          │          + Tracking              │
+          ▼                │                  ▼
+    Diarization            │             Frame Selection
+          │                ▼                  │
+          ▼          Face Emotion            ▼
+       GigaAM               │             Vision/OCR
+          │                │                  │
+          ▼                ▼                  │
+    Voice Emotion     Visual State            │
+          │                │                  │
+          └────────────────┼──────────────────┘
+                           ▼
+                 MULTIMODAL STATE ENGINE
+                           │
+                           ▼
+                  CONTEXT / MEMORY ENGINE
+                           │
+                           ▼
+                 INTENT / TURN DETECTOR
+                           │
+                           ▼
+                 FAST LLM / PLANNER
+                           │
+                  ┌────────┴────────┐
+                  │                 │
+                  ▼                 ▼
+             continue          response needed
+                  │                 │
+                  └────────┬────────┘
+                           ▼
+                     SMART LLM
+                           │
+                     token streaming
+                           ▼
+                  RESPONSE PLANNER
+                           │
+                 text chunks / prosody
+                           ▼
+                    STREAMING TTS
+                           │
+                           ▼
+                         AUDIO
+                           │
+                           ▼
+                       DESKTOP
+                           │
+                           ▼
+                      SPEAKER
+```
+
+---
+
+# 4. Audio pipeline
+
+```text
+Microphone
+    ↓
+Audio Capture
+    ↓
+Noise Suppression
+    ↓
+VAD
+    ↓
+Speaker Diarization
+    ↓
+Speaker Segmentation
+    ↓
+GigaAM RNNT
+    ↓
+Streaming ASR
+    ↓
+Word-level timestamps
+    ↓
+Voice Emotion Model
+    ↓
+Audio State
+```
+
+Результат:
+
+```json
+{
+  "speaker": "speaker_2",
+  "text": "Я думаю, что нам нужно переделать архитектуру",
+  "words": [...],
+  "emotion": {
+    "neutral": 0.21,
+    "concern": 0.63,
+    "irritation": 0.16
+  },
+  "speech_rate": 1.14,
+  "confidence": 0.94,
+  "timestamp": 1730
+}
+```
+
+ASR работает потоково.
+
+Система не ждёт окончания всей реплики.
+
+---
+
+# 5. Speaker Diarization
+
+Задача:
+
+> Определить, кто именно говорит.
+
+Пример:
+
+```text
+00:10.2 Speaker A
+"Смотри, я думаю..."
+
+00:12.7 Speaker B
+"Подожди."
+
+00:13.2 Speaker A
+"Да, слушай..."
+
+00:15.1 Speaker B
+"У нас проблема в Kafka."
+```
+
+Diarization работает параллельно с ASR.
+
+---
+
+# 6. Voice Emotion
+
+Отдельная модель анализирует характеристики голоса:
+
+* эмоциональный тон;
+* напряжение;
+* раздражение;
+* спокойствие;
+* уверенность;
+* грусть;
+* возбуждение;
+* и другие доступные классы.
+
+Не использовать один кадр/один аудиофрагмент как абсолютную истину.
+
+Использовать temporal smoothing:
+
+```text
+neutral
+neutral
+concern
+concern
+concern
+```
+
+→
+
+```text
+CURRENT SPEECH EMOTION = concern
+confidence = 0.81
+```
+
+---
+
+# 7. Camera Pipeline
+
+Камера может работать, например, в 30 FPS.
+
+Но дорогая модель эмоций не должна работать в 30 FPS.
+
+```text
+Camera 30 FPS
+      ↓
+Face Detection / Tracking
+      ↓
+Face position
+      ↓
+Emotion inference 1–2 FPS
+      ↓
+Temporal smoothing
+      ↓
+Visual Emotion State
+```
+
+Пример:
+
+```json
+{
+  "face_visible": true,
+  "face_confidence": 0.97,
+  "emotion": "concerned",
+  "confidence": 0.72,
+  "timestamp": 1734
+}
+```
+
+Если лицо отсутствует:
+
+```json
+{
+  "face_visible": false
+}
+```
+
+В этом случае face emotion pipeline не запускается.
+
+---
+
+# 8. Screen Capture Pipeline
+
+Не отправлять весь экран постоянно в Vision LLM.
+
+```text
+Desktop Capture
+      ↓
+Frame Difference / Change Detection
+      ↓
+Changed?
+   ┌──┴──┐
+  NO     YES
+   │      │
+ discard  ↓
+       Region Selection
+            ↓
+       Frame Sampling
+            ↓
+       Vision / OCR
+```
+
+Например:
+
+```text
+30–60 FPS screen capture
+        ↓
+cheap change detection
+        ↓
+только значимые изменения
+        ↓
+1–5 FPS inference
+```
+
+Если пользователь ничего не делает на экране, Vision model практически не работает.
+
+---
+
+# 9. Multimodal State Engine
+
+Все специализированные модели не обращаются непосредственно к LLM.
+
+Они формируют единое текущее состояние:
+
+```json
+{
+  "conversation": {
+    "topic": "Kafka exactly-once",
+    "last_messages": [...],
+    "active_speaker": "speaker_2"
+  },
+
+  "audio": {
+    "speech_active": true,
+    "speaker": "speaker_2",
+    "emotion": "concerned",
+    "speech_rate": 1.14
+  },
+
+  "visual": {
+    "face_visible": true,
+    "face_emotion": "neutral"
+  },
+
+  "screen": {
+    "application": "IntelliJ IDEA",
+    "context": "Java source code",
+    "changed": true
+  },
+
+  "dialogue": {
+    "question_probability": 0.82,
+    "turn_end_probability": 0.71,
+    "response_expected": true
+  }
+}
+```
+
+Это является главным входом для LLM.
+
+---
+
+# 10. Context Engine
+
+Context Engine объединяет:
+
+```text
+Current conversation
+        +
+Recent conversation
+        +
+Long-term context
+        +
+Screen context
+        +
+Audio emotion
+        +
+Face emotion
+        +
+Current task
+        +
+Active Skill
+        +
+User preferences
+```
+
+При этом LLM не получает бессмысленный поток всех сырых данных.
+
+Она получает только релевантное состояние.
+
+---
+
+# 11. Skills
+
+Skills определяют поведение AI.
+
+Примеры:
+
+```text
+skills/
+├── general-assistant
+├── java-interview
+├── coding
+├── meeting-assistant
+├── presentation
+├── sales-call
+├── negotiation
+├── language-learning
+└── gaming
+```
+
+Skill может задавать:
+
+* правила поведения;
+* формат ответа;
+* допустимую длину ответа;
+* уровень инициативности;
+* необходимость ждать окончания реплики;
+* реакцию на эмоции;
+* доступные инструменты;
+* контекст;
+* приоритеты.
+
+Пример:
+
+```text
+java-interview
+
+- Не перебивать собеседника.
+- Отвечать кратко и технически точно.
+- Если пользователь застрял — сначала дать hint.
+- Если задан coding question — перейти в coding mode.
+- Использовать screen context, если открыт IDE.
+- Не озвучивать внутренние рассуждения.
+```
+
+---
+
+# 12. Turn Detection
+
+Отдельный realtime-компонент определяет:
+
+```text
+Человек говорит?
+Человек закончил?
+Он делает паузу?
+Он продолжит?
+Он ждёт ответа?
+Он меняет мысль?
+Он перебивает AI?
+```
+
+Это критически важный компонент.
+
+Система должна уметь отвечать не только на окончание речи, но и прогнозировать окончание turn.
+
+---
+
+# 13. Fast LLM
+
+Быстрая LLM работает постоянно.
+
+Её задача:
+
+```text
+Что сейчас происходит?
+Нужно ли отвечать?
+Какой intent?
+Какой контекст важен?
+Какой Skill активировать?
+Нужно ли запускать Smart LLM?
+```
+
+Она должна быть небольшой и очень быстрой.
+
+Цель:
+
+```text
+~100–300 ms
+```
+
+в зависимости от модели и hardware.
+
+---
+
+# 14. Smart LLM
+
+Smart LLM формирует содержательный ответ.
+
+Важно:
+
+> Не обязательно использовать огромную 70B+ модель.
+
+Для realtime-системы предпочтительнее хорошо оптимизированная 7–14B/другая компактная модель с хорошим качеством и низкой задержкой.
+
+Fast LLM отвечает за orchestration.
+
+Smart LLM отвечает за reasoning / generation.
+
+---
+
+# 15. Predictive Generation
+
+Система начинает готовить ответ ещё во время реплики.
+
+Пример:
+
+```text
+User:
+"Слушай, а если мы перенесём обработку..."
+
+                ↓
+
+LLM уже анализирует:
+
+intent = architecture_question
+topic = Kafka
+skill = java/backend
+```
+
+Пользователь:
+
+```text
+"...в отдельный consumer..."
+```
+
+LLM уже имеет направление ответа.
+
+После завершения:
+
+```text
+"...group?"
+```
+
+система не начинает работу с нуля.
+
+Она уточняет уже подготовленный draft.
+
+---
+
+# 16. Streaming Response
+
+LLM не ждёт завершения полного ответа.
+
+```text
+LLM
+ ↓
+"Да,"
+ ↓
+"Да, здесь"
+ ↓
+"Да, здесь я бы"
+ ↓
+"Да, здесь я бы использовал Kafka..."
+```
+
+Response Planner собирает токены в смысловые chunks:
+
+```text
+Chunk 1:
+"Да, здесь я бы"
+
+Chunk 2:
+"использовал Kafka."
+
+Chunk 3:
+"При этом..."
+```
+
+---
+
+# 17. Prosody / Speech Planner
+
+Перед TTS текст преобразуется в речевой сценарий:
+
+```json
+{
+  "text": "Да, здесь я бы использовал Kafka.",
+  "emotion": "confident",
+  "speed": 0.96,
+  "pitch": 1.02,
+  "pauses": [
+    {
+      "after": "Да,",
+      "duration_ms": 180
+    }
+  ],
+  "emphasis": [
+    "Kafka"
+  ]
+}
+```
+
+Это позволяет TTS говорить естественно, а не просто читать текст.
+
+---
+
+# 18. Streaming TTS
+
+```text
+LLM
+ ↓
+Text Chunk
+ ↓
+Prosody Planner
+ ↓
+TTS
+ ↓
+Audio Chunk
+ ↓
+Desktop
+ ↓
+Speaker
+```
+
+Не ждать окончания полного ответа.
+
+Например:
+
+```text
+LLM:
+"Да,"
+       ↓
+TTS:
+🔊 "Да,"
+
+LLM:
+"здесь я бы использовал..."
+       ↓
+TTS:
+🔊 "здесь я бы использовал..."
+```
+
+---
+
+# 19. Barge-in
+
+Если пользователь начинает говорить во время ответа AI:
+
+```text
+AI:
+"Да, здесь я бы..."
+
+User:
+"Подожди—"
+
+        ↓
+
+VAD detects speech
+        ↓
+TTS CANCEL
+        ↓
+Audio playback STOP
+        ↓
+Current generation CANCEL
+        ↓
+New user turn
+```
+
+Это должно происходить практически мгновенно.
+
+---
+
+# 20. Главный принцип latency
+
+Нельзя строить pipeline следующим образом:
+
+```text
+record
+ ↓
+finish recording
+ ↓
+ASR
+ ↓
+LLM
+ ↓
+finish LLM
+ ↓
+TTS
+ ↓
+play
+```
+
+Правильная архитектура:
+
+```text
+stream
+ ↓
+partial ASR
+ ↓
+partial context
+ ↓
+early intent
+ ↓
+LLM speculative generation
+ ↓
+partial response
+ ↓
+streaming TTS
+ ↓
+audio playback
+```
+
+Все стадии работают одновременно.
+
+---
+
+# 21. GPU Memory Strategy
+
+Все realtime-модели должны быть resident в VRAM:
+
+```text
+RTX 6000 Pro 96 GB
+
+├── ASR
+├── Speaker Diarization
+├── Voice Emotion
+├── Face Detection
+├── Face Emotion
+├── Vision/OCR
+├── Fast LLM
+├── Smart LLM
+├── TTS
+├── KV Cache
+└── Runtime buffers
+```
+
+Не допускать:
+
+```text
+load model
+→ inference
+→ unload model
+→ load another model
+```
+
+Это недопустимо для low-latency режима.
+
+---
+
+# 22. CPU Strategy
+
+32 vCPU распределяются между:
+
+```text
+Audio workers
+Video workers
+Screen workers
+Decoder workers
+Preprocessing
+Networking
+Orchestrator
+Context Engine
+Model servers
+TTS streaming
+Logging / monitoring
+```
+
+При необходимости использовать CPU affinity / pinning для наиболее чувствительных realtime worker'ов.
+
+---
+
+# 23. Network
+
+Desktop ↔ Server соединение должно быть постоянным.
+
+Предпочтительно:
+
+```text
+persistent WebSocket / QUIC
+```
+
+Не использовать отдельный HTTP request для каждого audio/video chunk.
+
+Потоки:
+
+```text
+Microphone → Server
+Camera → Server
+Screen → Server
+
+Server → Desktop
+TTS audio
+State/events
+UI updates
+```
+
+---
+
+# 24. Latency Budget
+
+Целевая архитектура должна стремиться примерно к:
+
+```text
+Audio capture
+       ↓
+10–30 ms
+
+VAD / preprocessing
+       ↓
+10–30 ms
+
+Partial ASR
+       ↓
+~50–150 ms
+
+Intent / state update
+       ↓
+~20–100 ms
+
+LLM first token
+       ↓
+~100–300 ms
+
+TTS first audio
+       ↓
+~50–200 ms
+```
+
+Главная цель:
+
+> Начало ответа должно происходить практически сразу после определения, что пользователь закончил смысловой turn.
+
+Не обязательно ждать полного ответа LLM.
+
+---
+
+# 25. Итоговая схема
+
+```text
+                         ┌─────────────────────┐
+                         │       DESKTOP       │
+                         │                     │
+                         │ Mic / Camera /      │
+                         │ Screen              │
+                         └──────────┬──────────┘
+                                    │
+                              QUIC / WS
+                                    │
+                                    ▼
+┌───────────────────────────────────────────────────────────┐
+│                    RTX 6000 Pro 96 GB                     │
+│                                                           │
+│  AUDIO                 VIDEO              SCREEN          │
+│  ─────                 ─────              ──────          │
+│  VAD                   Face Track         Change Detect   │
+│  Diarization           Face Emotion       Frame Select   │
+│  GigaAM                Visual State       Vision/OCR      │
+│  Voice Emotion                                             │
+│       │                    │                  │            │
+│       └────────────────────┼──────────────────┘            │
+│                            ▼                               │
+│                   MULTIMODAL STATE                         │
+│                            │                               │
+│                            ▼                               │
+│                     CONTEXT ENGINE                          │
+│                            │                               │
+│                            ▼                               │
+│                    TURN DETECTOR                            │
+│                            │                               │
+│                            ▼                               │
+│                       FAST LLM                              │
+│                            │                               │
+│                  ┌─────────┴─────────┐                     │
+│                  │                   │                     │
+│             no response         response                   │
+│                                      │                     │
+│                                      ▼                     │
+│                                SMART LLM                   │
+│                                      │                     │
+│                                      ▼                     │
+│                              RESPONSE PLANNER              │
+│                                      │                     │
+│                                      ▼                     │
+│                              PROSODY ENGINE                │
+│                                      │                     │
+│                                      ▼                     │
+│                              STREAMING TTS                 │
+│                                      │                     │
+└──────────────────────────────────────┼────────────────────┘
+                                       │
+                                  AUDIO STREAM
+                                       │
+                                       ▼
+                                  DESKTOP
+                                       │
+                                       ▼
+                                    SPEAKER
+```
+
+## Основные характеристики
+
+**Архитектура:** streaming / event-driven / multimodal
+**Пользователи:** 1
+**GPU:** RTX 6000 Pro 96 GB
+**CPU:** 32 vCPU
+**RAM:** 128 GB
+**Storage:** 1 TB NVMe
+**ASR:** GigaAM RNNT
+**Diarization:** streaming speaker diarization
+**Voice emotion:** отдельная модель эмоций речи
+**Face:** detection + tracking + emotion, ~1–2 FPS inference
+**Screen:** change detection → selective vision/OCR
+**LLM:** Fast LLM + Smart LLM
+**TTS:** streaming TTS
+**Transport:** persistent WebSocket/QUIC
+**Core property:** speculative generation + streaming TTS + barge-in
+**Главная цель:** минимальная end-to-end latency при сохранении мультимодального контекста.
